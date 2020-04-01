@@ -2,12 +2,31 @@ package br.com.albergue.domain;
 
 import java.time.LocalDateTime;
 
-public abstract class Payment {
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="payment_type", 
+  discriminatorType = DiscriminatorType.INTEGER)
+public abstract class Payments {
+	
+	@Id
+	@Column(nullable = false)
+	@GeneratedValue(generator = "PaymentIdGenerator")
+	private Long id;
+	
 	protected double amount;
 	protected LocalDateTime dateTime;
 	
-	public static Payment createPayment(String type) {
-		Payment payment = null;
+	public static Payments createPayment(String type) {
+		Payments payment = null;
 		switch (type) {
 			case "Cash" :
 				payment = new CashPayment();
@@ -22,6 +41,10 @@ public abstract class Payment {
 				payment = new CashPayment();
 		}
 	    return payment;
+	}
+	
+	public Long getId() {
+	    return id;
 	}
 	
 	public double getAmount() {
@@ -48,21 +71,21 @@ public abstract class Payment {
 	
 	public static void main(String[] args) {
 		
-		Payment cashPayment = Payment.createPayment("Cash");
+		Payments cashPayment = Payments.createPayment("Cash");
 		cashPayment.setAmount(500.00);
 		cashPayment.setDate(LocalDateTime.now());
 		System.out.println(cashPayment);
 		
 		System.out.println("------------------------------");
 		
-		Payment cardPayment = Payment.createPayment("Credit Card");
+		Payments cardPayment = Payments.createPayment("Credit Card");
 		cardPayment.setAmount(1750.00);
 		cardPayment.setDate(LocalDateTime.now());
 		System.out.println(cardPayment);
 		
 		System.out.println("------------------------------");
 		
-		Payment checkPayment = Payment.createPayment("Check");
+		Payments checkPayment = Payments.createPayment("Check");
 		checkPayment.setAmount(225.72);
 		checkPayment.setDate(LocalDateTime.now());
 		System.out.println(checkPayment);		

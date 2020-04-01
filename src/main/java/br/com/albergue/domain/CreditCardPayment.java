@@ -2,7 +2,12 @@ package br.com.albergue.domain;
 
 import java.time.LocalDate;
 
-public class CreditCardPayment extends Payment{
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
+@Entity
+@DiscriminatorValue("3")
+public class CreditCardPayment extends Payments{
 	private double amount;  
 	private String issuer;
 	private String number;

@@ -1,7 +1,11 @@
 package br.com.albergue.domain;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 
-public class CheckPayment extends Payment {
+@Entity
+@DiscriminatorValue("2")
+public class CheckPayment extends Payments {
 	
 	private String bankId;
 	private String bankName;
@@ -14,6 +18,30 @@ public class CheckPayment extends Payment {
                 "Bank name...: " + this.bankName + "\n" +
                 "Branch number...: " + this.branchNumber;
 		return result;
+	}
+
+	public String getBankId() {
+		return bankId;
+	}
+
+	public void setBankId(String bankId) {
+		this.bankId = bankId;
+	}
+
+	public String getBankName() {
+		return bankName;
+	}
+
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
+	}
+
+	public String getBranchNumber() {
+		return branchNumber;
+	}
+
+	public void setBranchNumber(String branchNumber) {
+		this.branchNumber = branchNumber;
 	}
 
 }
