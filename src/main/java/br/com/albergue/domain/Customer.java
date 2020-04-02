@@ -197,5 +197,4 @@ public class Customer implements UserDetails {
 	public void addReservation(Reservation reservation) {
 		this.reservations.add(reservation);
 	}
-
 }
