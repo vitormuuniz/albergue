@@ -93,7 +93,6 @@ public class HostelController {
 			return ResponseEntity.ok().build();
 		} else
 			return ResponseEntity.notFound().build();
-
 	}
 	
 	@PostMapping("/reservations") // chegam do cliente para a api
