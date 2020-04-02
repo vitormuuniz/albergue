@@ -1,8 +1,5 @@
 package br.com.albergue.domain;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,10 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-
-import br.com.albergue.domain.exceptions.CustomerNotFoundException;
-import br.com.albergue.domain.exceptions.ReservationNotFoundException;
-import br.com.albergue.domain.exceptions.RoomNotFoundException;
 
 @Entity
 public class Hostel {

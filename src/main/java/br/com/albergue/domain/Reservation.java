@@ -9,7 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 @Entity
 public class Reservation {
@@ -76,15 +75,15 @@ public class Reservation {
 //		return payment;
 //	}
 
-	// TODO Implement the business logic
-	public double calculateTotalAmount() {
-		double amount = 0.0;
-		int numberOfDays = 0; //
-		for (Room room : rooms) {
-
-		}
-		return 0.0;
-	}
+//	// TODO Implement the business logic
+//	public double calculateTotalAmount() {
+//		double amount = 0.0;
+//		int numberOfDays = 0; //
+//		for (Room room : rooms) {
+//
+//		}
+//		return 0.0;
+//	}
 
 	public String getReservationCode() {
 		return reservationCode;
