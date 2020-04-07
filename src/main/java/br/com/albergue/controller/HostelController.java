@@ -1,6 +1,7 @@
 package br.com.albergue.controller;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -51,7 +52,7 @@ public class HostelController {
 	// sejam passados parametros
 
 	@GetMapping("/customers") // dto = saem da api e é retornado para o cliente
-	public Page<CustomerDto> listAll(@RequestParam(required = false) String name,
+	public Page<CustomerDto> listAllCustomers(@RequestParam(required = false) String name,
 			@PageableDefault(sort = "id", direction = Direction.DESC, page = 0, size = 10) Pageable pagination) {
 
 		if (name == null)
@@ -63,7 +64,7 @@ public class HostelController {
 	// @PathVariable indica que esse 'id' virá através da url com /topicos/id
 	// inves de ser passado com '?id='
 	@GetMapping("/customers/{id}")
-	public ResponseEntity<CustomerDto> listOne(@PathVariable Long id) {
+	public ResponseEntity<CustomerDto> listOneCustomer(@PathVariable Long id) {
 		Optional<Customer> customer = customerRepository.findById(id);
 		if (customer.isPresent())
 			return ResponseEntity.ok(new CustomerDto(customer.get()));
@@ -72,7 +73,7 @@ public class HostelController {
 	}
 	
 	@PostMapping("/customers") // chegam do cliente para a api
-	public ResponseEntity<CustomerDto> cadastrarCustomer(@RequestBody @Valid CustomerForm form, UriComponentsBuilder uriBuilder) {
+	public ResponseEntity<CustomerDto> registerCustomer(@RequestBody @Valid CustomerForm form, UriComponentsBuilder uriBuilder) {
 		Customer customer = form.converter(addressRepository);
 		customerRepository.save(customer);
 
@@ -86,7 +87,7 @@ public class HostelController {
 	
 	@DeleteMapping("/customers/{id}")
 	@Transactional
-	public ResponseEntity<?> remover(@PathVariable Long id) {
+	public ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
 		Optional<Customer> topico = customerRepository.findById(id);
 		if (topico.isPresent()) {
 			customerRepository.deleteById(id);
@@ -96,7 +97,7 @@ public class HostelController {
 	}
 	
 	@PostMapping("/reservations") // chegam do cliente para a api
-	public ResponseEntity<ReservationDto> cadastrarReserva(@RequestBody @Valid ReservationForm form, UriComponentsBuilder uriBuilder) {
+	public ResponseEntity<ReservationDto> registerReservation(@RequestBody @Valid ReservationForm form, UriComponentsBuilder uriBuilder) {
 		Optional<Customer> customerOp = form.returnCustomer(customerRepository);
 		
 		if(customerOp.isPresent()) {
@@ -117,14 +118,35 @@ public class HostelController {
 			return (ResponseEntity<ReservationDto>) ResponseEntity.badRequest();
 	}
 	
+	@GetMapping("/reservations") // dto = saem da api e é retornado para o cliente
+	public Page<ReservationDto> listAllReservations(@RequestParam(required = false) LocalDate reservationDate,
+			@PageableDefault(sort = "id", direction = Direction.DESC, page = 0, size = 10) Pageable pagination) {
+
+		if (reservationDate == null)
+			return ReservationDto.converter(reservationRepository.findAll(pagination));
+		else
+			return ReservationDto.converter(reservationRepository.findByReservationDate(reservationDate, pagination));
+	}
+	
 	// @PathVariable indica que esse 'id' virá através da url com /topicos/id
 	// inves de ser passado com '?id='
 	@GetMapping("/reservations/{id}")
-	public ResponseEntity<ReservationDto> listReservations(@PathVariable Long id) {
-		Optional<Customer> customer = customerRepository.findById(id);
-		if (customer.isPresent())
-			return ResponseEntity.ok(new ReservationDto(customer.get().getReservations()));
+	public ResponseEntity<ReservationDto> listOneReservation(@PathVariable Long id) {
+		Optional<Reservation> reservation = reservationRepository.findById(id);
+		if (reservation.isPresent())
+			return ResponseEntity.ok(new ReservationDto(reservation.get()));
 		else
+			return ResponseEntity.notFound().build();
+	}
+	
+	@DeleteMapping("/reservations/{id}")
+	@Transactional
+	public ResponseEntity<?> deleteReservation(@PathVariable Long id) {
+		Optional<Reservation> reservation = reservationRepository.findById(id);
+		if (reservation.isPresent()) {
+			reservationRepository.deleteById(id);
+			return ResponseEntity.ok().build();
+		} else
 			return ResponseEntity.notFound().build();
 	}
 }
