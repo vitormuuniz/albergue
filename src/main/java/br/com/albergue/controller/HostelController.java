@@ -29,7 +29,6 @@ import br.com.albergue.controller.dto.RoomDto;
 import br.com.albergue.controller.form.CustomerForm;
 import br.com.albergue.controller.form.ReservationForm;
 import br.com.albergue.controller.form.RoomForm;
-import br.com.albergue.domain.Address;
 import br.com.albergue.domain.Customer;
 import br.com.albergue.domain.Reservation;
 import br.com.albergue.domain.Room;
@@ -97,11 +96,9 @@ public class HostelController {
 	@DeleteMapping("/customers/{id}")
 	@Transactional
 	public ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
-		Optional<Customer> customerOp = customerRepository.findById(id);
-		if (customerOp.isPresent()) {
-			Long addressID = customerOp.get().getAddress().getId();
+		Optional<Customer> topico = customerRepository.findById(id);
+		if (topico.isPresent()) {
 			customerRepository.deleteById(id);
-			addressRepository.deleteById(addressID);
 			return ResponseEntity.ok().build();
 		} else
 			return ResponseEntity.notFound().build();

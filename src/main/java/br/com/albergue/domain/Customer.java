@@ -34,7 +34,7 @@ public class Customer implements UserDetails {
 	private String lastName;
 	@Column(nullable = false)
 	private LocalDate birthday;
-	@OneToOne
+	@OneToOne(cascade=CascadeType.REMOVE)
 	@JoinColumn(name = "address_ID", nullable = false)
 	private Address address;
 	@Column(nullable = false)
@@ -45,7 +45,7 @@ public class Customer implements UserDetails {
 	@Column(name="perfis") @OneToMany(fetch = FetchType.EAGER)
 	private List<Perfil> perfis = new ArrayList<>();
 	
-    @OneToMany
+	@OneToMany(cascade={CascadeType.REMOVE, CascadeType.MERGE})
     @Column(name="reservations")
     private Set<Reservation> reservations;
     
