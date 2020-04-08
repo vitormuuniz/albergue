@@ -69,26 +69,26 @@ public abstract class Payments {
 		return result;
 	}
 	
-	public static void main(String[] args) {
-		
-		Payments cashPayment = Payments.createPayment("Cash");
-		cashPayment.setAmount(500.00);
-		cashPayment.setDate(LocalDateTime.now());
-		System.out.println(cashPayment);
-		
-		System.out.println("------------------------------");
-		
-		Payments cardPayment = Payments.createPayment("Credit Card");
-		cardPayment.setAmount(1750.00);
-		cardPayment.setDate(LocalDateTime.now());
-		System.out.println(cardPayment);
-		
-		System.out.println("------------------------------");
-		
-		Payments checkPayment = Payments.createPayment("Check");
-		checkPayment.setAmount(225.72);
-		checkPayment.setDate(LocalDateTime.now());
-		System.out.println(checkPayment);		
-	}
+//	public static void main(String[] args) {
+//		
+//		Payments cashPayment = Payments.createPayment("Cash");
+//		cashPayment.setAmount(500.00);
+//		cashPayment.setDate(LocalDateTime.now());
+//		System.out.println(cashPayment);
+//		
+//		System.out.println("------------------------------");
+//		
+//		Payments cardPayment = Payments.createPayment("Credit Card");
+//		cardPayment.setAmount(1750.00);
+//		cardPayment.setDate(LocalDateTime.now());
+//		System.out.println(cardPayment);
+//		
+//		System.out.println("------------------------------");
+//		
+//		Payments checkPayment = Payments.createPayment("Check");
+//		checkPayment.setAmount(225.72);
+//		checkPayment.setDate(LocalDateTime.now());
+//		System.out.println(checkPayment);		
+//	}
 }
 
