@@ -99,9 +99,9 @@ public class HostelController {
 	public ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
 		Optional<Customer> customerOp = customerRepository.findById(id);
 		if (customerOp.isPresent()) {
-			Address address = customerOp.get().getAddress();
+			Long addressID = customerOp.get().getAddress().getId();
 			customerRepository.deleteById(id);
-			addressRepository.deleteById(address.getId());
+			addressRepository.deleteById(addressID);
 			return ResponseEntity.ok().build();
 		} else
 			return ResponseEntity.notFound().build();
