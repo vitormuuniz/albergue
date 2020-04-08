@@ -1,8 +1,6 @@
 package br.com.albergue.controller.dto;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.springframework.data.domain.Page;
 
@@ -13,19 +11,12 @@ public class ReservationDto {
 	private LocalDate reservationDate;
 	private LocalDate checkinDate;
 	private LocalDate checkoutDate;
-	private Set<Reservation> reservations = new HashSet<Reservation>();
 	
 	public ReservationDto(Reservation reservation) {
 		this.reservationDate = reservation.getReservationDate();
 		this.checkinDate =  reservation.getCheckinDate();
 		this.checkoutDate = reservation.getCheckoutDate();
 	}
-
-	
-	public ReservationDto(Set<Reservation> reservations) {
-		this.reservations = reservations;
-	}
-
 
 	public LocalDate getReservationDate() {
 		return reservationDate;

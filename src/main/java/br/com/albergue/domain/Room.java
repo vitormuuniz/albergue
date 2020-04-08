@@ -18,6 +18,24 @@ public class Room {
 	@OneToOne
 	private DailyRate dailyRate;
 	
+	public Room() {
+		
+	}
+	
+	public Room(int number, double dimension) {
+		this.number = number;
+		this.dimension = dimension;
+	}
+	
+	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	public int getNumber() {
 		return number;
 	}
