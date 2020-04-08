@@ -84,7 +84,7 @@ public class CustomerForm {
 		this.password = password;
 	}
 
-	public Customer converter(AddressRepository addressRepository) {
+	public Customer returnCustomer(AddressRepository addressRepository) {
 		Optional<Address> address = addressRepository.findById(getAddress_ID());
 		return new Customer(title, name, lastname, birthday, address.get(), email, new BCryptPasswordEncoder().encode(password));
 	}

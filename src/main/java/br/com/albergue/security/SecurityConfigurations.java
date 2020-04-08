@@ -51,7 +51,10 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests()
 				.antMatchers(HttpMethod.GET, "/api/customers").permitAll() // permite publicamente somente o get 
 				.antMatchers(HttpMethod.GET, "/api/customers/*").permitAll() // permite publicamente somente o get 
-//				.antMatchers(HttpMethod.POST, "/customers").permitAll() // permite publicamente somente o post 
+				.antMatchers(HttpMethod.GET, "/api/reservations").permitAll() // permite publicamente somente o get 
+				.antMatchers(HttpMethod.GET, "/api/reservations/*").permitAll() // permite publicamente somente o get 
+				.antMatchers(HttpMethod.GET, "/api/rooms").permitAll() // permite publicamente somente o get 
+				.antMatchers(HttpMethod.GET, "/api/rooms/*").permitAll() // permite publicamente somente o get 
 				.antMatchers(HttpMethod.POST, "/auth").permitAll() // permite publicamente somente o post
 				.anyRequest().authenticated() // qualquer outra requisicao precisara estar autenticado
 ////		.and().formLogin() //formulario de autenticacao nativo do spring (não usado pois ele cria sessão, deixando de ser stateless)
