@@ -4,6 +4,8 @@ import java.time.LocalDate;
 
 import org.springframework.data.domain.Page;
 
+import br.com.albergue.domain.Address;
+import br.com.albergue.domain.Payments;
 import br.com.albergue.domain.Reservation;
 
 public class ReservationDto {
@@ -11,11 +13,13 @@ public class ReservationDto {
 	private LocalDate reservationDate;
 	private LocalDate checkinDate;
 	private LocalDate checkoutDate;
+	private Payments payments;
 	
 	public ReservationDto(Reservation reservation) {
 		this.reservationDate = reservation.getReservationDate();
 		this.checkinDate =  reservation.getCheckinDate();
 		this.checkoutDate = reservation.getCheckoutDate();
+		this.payments = reservation.getPayment();
 	}
 
 	public LocalDate getReservationDate() {
@@ -37,5 +41,13 @@ public class ReservationDto {
 //		return topicos.stream().map(TopicoDto::new).collect(Collectors.toList());
 	
 		return reservation.map(ReservationDto::new);
+	}
+
+	public Payments getPayments() {
+		return payments;
+	}
+
+	public void setPayments(Payments payments) {
+		this.payments = payments;
 	}
 }

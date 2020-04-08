@@ -8,7 +8,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Reservation {
@@ -24,12 +26,15 @@ public class Reservation {
 	private LocalDate checkoutDate;
 	@OneToMany
 	private Set<Room> rooms = new HashSet<>();
-//	private Payment payment;
+	@OneToOne
+	@JoinColumn(name = "payments_ID", nullable = false)
+	private Payments payment;
 	
-	public Reservation(LocalDate reservationDate, LocalDate checkinDate, LocalDate checkoutDate) {
+	public Reservation(LocalDate reservationDate, LocalDate checkinDate, LocalDate checkoutDate, Payments payment) {
 		this.reservationDate = reservationDate;
 		this.checkinDate = checkinDate;
 		this.checkoutDate = checkoutDate;
+		this.payment = payment;
 	}
 
 	public Reservation() {
@@ -68,9 +73,9 @@ public class Reservation {
 		return rooms;
 	}
 
-//	public Payment createPayment(String type) {
+//	public Payments createPayment(String type) {
 //		if (payment == null) {
-//			payment = Payment.createPayment(type);
+//			payment = Payments.createPayment(type);
 //		}
 //		return payment;
 //	}
@@ -101,13 +106,13 @@ public class Reservation {
 		this.numberOfGuests = numberOfGuests;
 	}
 
-//	public Payment getPayment() {
-//		return payment;
-//	}
-//
-//	public void setPayment(Payment payment) {
-//		this.payment = payment;
-//	}
+	public Payments getPayment() {
+		return payment;
+	}
+
+	public void setPayment(Payments payment) {
+		this.payment = payment;
+	}
 
 	public void setRooms(Set<Room> rooms) {
 		this.rooms = rooms;

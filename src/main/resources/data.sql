@@ -1,3 +1,5 @@
 insert into address(address_name, zip_code, city, state, country) values('rua 2', '13901264', 'amparo', 'sp', 'brasil');
 INSERT INTO Customer(title, name, last_Name, birthday, address_ID, email, password) VALUES('MRS.', 'Aluno', '2', DATE('2019-09-01'), 1, 'aluno@email.com', '$2a$10$ztYTBinS/LitQOno2jjwf.x7aNLRPs0iO1pIQ9ITqtNwTMybwV/MW');
-
+insert into payments(payment_type, id, amount, date_time, amount_tendered, bank_id, bank_name, branch_number, expiration_date, issuer, name_on_card, number, security_code) values(1, 1, 5000, null, 5000, null, null, null, null, null, null, null, null);
+insert into payments(payment_type, id, amount, date_time, amount_tendered, bank_id, bank_name, branch_number, expiration_date, issuer, name_on_card, number, security_code) values(2, 2, 5000, DATE('2020-04-08'), null, null, null, null, DATE('2022-04-08'), 'VISA', '1234 5678 9101 1121', '1234', '123');
+insert into payments(payment_type, id, amount, date_time, amount_tendered, bank_id, bank_name, branch_number, expiration_date, issuer, name_on_card, number, security_code) values(3, 3, 5000, DATE('2020-04-08'), null, '01', 'Banco do Brasil', '1234-5', null, null, null, null, null);
