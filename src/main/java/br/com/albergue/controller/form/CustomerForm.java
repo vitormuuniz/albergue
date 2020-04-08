@@ -22,7 +22,7 @@ public class CustomerForm {
 	@NotNull 
 	private LocalDate birthday;
 	@NotNull 
-	private Long address_ID;
+	private Address address;
 	@NotNull 
 	private String email;
 	@NotNull 
@@ -52,12 +52,12 @@ public class CustomerForm {
 		this.lastname = lastname;
 	}
 
-	public Long getAddress_ID() {
-		return address_ID;
+	public Address getAddress() {
+		return address;
 	}
 
-	public void setAddress_ID(Long address_ID) {
-		this.address_ID = address_ID;
+	public void setAddress(Address address) {
+		this.address = address;
 	}
 	
 	public LocalDate getBirthday() {
@@ -85,7 +85,7 @@ public class CustomerForm {
 	}
 
 	public Customer returnCustomer(AddressRepository addressRepository) {
-		Optional<Address> address = addressRepository.findById(getAddress_ID());
-		return new Customer(title, name, lastname, birthday, address.get(), email, new BCryptPasswordEncoder().encode(password));
+		addressRepository.save(address);
+		return new Customer(title, name, lastname, birthday, address, email, new BCryptPasswordEncoder().encode(password));
 	}
 }
