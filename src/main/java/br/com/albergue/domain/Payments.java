@@ -11,10 +11,16 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="payment_type", 
   discriminatorType = DiscriminatorType.INTEGER)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({@Type(value = CashPayment.class, name = "cash"), @Type(value = CheckPayment.class, name = "check"), @Type(value = CreditCardPayment.class, name = "creditCard") })
 public abstract class Payments {
 	
 	@Id
