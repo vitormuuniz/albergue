@@ -31,6 +31,8 @@ public class TestingGetMethods {
 	@Autowired
 	private RoomRepository roomRepository;
 	
+	private String baseUrl = "http://localhost:" + port;
+	
 //	@Autowired
 //	RestTemplate restTemplate;
 
@@ -54,8 +56,7 @@ public class TestingGetMethods {
 	@Test
 	public void testListAllRoomsMethodWithoutParam() throws URISyntaxException {
 
-		final String baseUrl = "http://localhost:" + port + "/api/rooms";
-		URI uri = new URI(baseUrl);
+		URI uri = new URI(baseUrl + "/api/rooms");
 
 		Room room = new Room(1, 230.0);
 		roomRepository.save(room);
@@ -70,8 +71,7 @@ public class TestingGetMethods {
 	@Test
 	public void testListAllCustomersMethodWithoutParam() throws URISyntaxException {
 
-		final String baseUrl = "http://localhost:" + port + "/api/customers";
-		URI uri = new URI(baseUrl);
+		URI uri = new URI(baseUrl + "/api/customers");
 		ResponseEntity<String> result = restTemplate.getForEntity(uri, String.class);
 
 		System.out.println(result.getBody());
@@ -84,8 +84,7 @@ public class TestingGetMethods {
 	@Test
 	public void testListAllCustomersMethodWithParam() throws URISyntaxException {
 		
-		final String baseUrl = "http://localhost:" + port + "/api/customers?name=Aluno";
-		URI uri = new URI(baseUrl);
+		URI uri = new URI(baseUrl + "/api/customers?name=Aluno");
 		ResponseEntity<String> result = restTemplate.getForEntity(uri, String.class);
 		
 		System.out.println(result.getBody());
@@ -97,8 +96,7 @@ public class TestingGetMethods {
 	@Test
 	public void testListAllCustomersMethodWithWrongParam() throws URISyntaxException {
 
-		final String baseUrl = "http://localhost:" + port + "/api/customers?name=Aluno222";
-		URI uri = new URI(baseUrl);
+		URI uri = new URI(baseUrl + "/api/customers?name=Aluno222");
 		ResponseEntity<String> result = restTemplate.getForEntity(uri, String.class);
 
 		System.out.println(result.getBody());
