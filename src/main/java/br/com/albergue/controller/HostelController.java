@@ -100,8 +100,8 @@ public class HostelController {
 	@DeleteMapping("/customers/{id}")
 	@Transactional
 	public ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
-		Optional<Customer> topico = customerRepository.findById(id);
-		if (topico.isPresent()) {
+		Optional<Customer> customer = customerRepository.findById(id);
+		if (customer.isPresent()) {
 			customerRepository.deleteById(id);
 			return ResponseEntity.ok().build();
 		} else
