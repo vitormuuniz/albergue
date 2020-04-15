@@ -1,11 +1,13 @@
 package br.com.albergue.controller.dto;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 
 import br.com.albergue.domain.Address;
 import br.com.albergue.domain.Customer;
+import br.com.albergue.domain.Reservation;
 
 public class CustomerDto {
 	
@@ -17,7 +19,8 @@ public class CustomerDto {
 	private Address address;
 	private String email;
 	private String password;
-	
+    private Set<Reservation> reservations;
+
 	public CustomerDto(Customer customer) {
 		this.id = customer.getId();
 		this.title = customer.getTitle();
@@ -27,6 +30,7 @@ public class CustomerDto {
 		this.address = customer.getAddress();
 		this.email = customer.getEmail();
 		this.password = customer.getPassword();
+		this.reservations = customer.getReservations();
 	}
 	
 	public Long getId() {
@@ -59,6 +63,14 @@ public class CustomerDto {
 	
 	public String getPassword() {
 		return password;
+	}
+	
+	public Set<Reservation> getReservations() {
+		return reservations;
+	}
+
+	public void setReservations(Set<Reservation> reservations) {
+		this.reservations = reservations;
 	}
 
 	public static Page<CustomerDto> converter(Page<Customer> customer) {

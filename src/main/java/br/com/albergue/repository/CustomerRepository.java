@@ -17,6 +17,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Long>{
 	//se houver uma variavel customerNome, para pegar a variavel nome dentro de Curso
 	//seria findByCustomer_Nome
 	Page<Customer> findByName(String name, Pageable paginacao);
+	
+	Optional<Customer> findByName(String name);
 
 	Optional<Customer> findByEmail(String email);
 	
