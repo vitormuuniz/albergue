@@ -34,6 +34,7 @@ import br.com.albergue.domain.Reservation;
 import br.com.albergue.domain.Room;
 import br.com.albergue.repository.AddressRepository;
 import br.com.albergue.repository.CustomerRepository;
+import br.com.albergue.repository.PaymentsRepository;
 import br.com.albergue.repository.ReservationRepository;
 import br.com.albergue.repository.RoomRepository;
 
@@ -52,6 +53,9 @@ public class HostelController {
 
 	@Autowired
 	private RoomRepository roomRepository;
+	
+	@Autowired
+	private PaymentsRepository paymentsRepository;
 	
 	
 	@PostMapping("/customers") // chegam do cliente para a api
@@ -106,10 +110,11 @@ public class HostelController {
 	
 	@PostMapping("/reservations") // chegam do cliente para a api
 	public ResponseEntity<ReservationDto> registerReservation(@RequestBody @Valid ReservationForm form, UriComponentsBuilder uriBuilder) {
+		
 		Optional<Customer> customerOp = form.returnCustomer(customerRepository);
 		
 		if(customerOp.isPresent()) {
-			Reservation reservation = form.returnReservation();
+			Reservation reservation = form.returnReservation(paymentsRepository);
 			reservationRepository.save(reservation);
 			
 			Customer customer = customerOp.get();

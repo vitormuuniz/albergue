@@ -11,10 +11,16 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="payment_type", 
   discriminatorType = DiscriminatorType.INTEGER)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({@Type(value = CashPayment.class, name = "cash"), @Type(value = CheckPayment.class, name = "check"), @Type(value = CreditCardPayment.class, name = "creditCard") })
 public abstract class Payments {
 	
 	@Id
@@ -68,27 +74,4 @@ public abstract class Payments {
                                 "Date & time..: " + this.dateTime;
 		return result;
 	}
-	
-//	public static void main(String[] args) {
-//		
-//		Payments cashPayment = Payments.createPayment("Cash");
-//		cashPayment.setAmount(500.00);
-//		cashPayment.setDate(LocalDateTime.now());
-//		System.out.println(cashPayment);
-//		
-//		System.out.println("------------------------------");
-//		
-//		Payments cardPayment = Payments.createPayment("Credit Card");
-//		cardPayment.setAmount(1750.00);
-//		cardPayment.setDate(LocalDateTime.now());
-//		System.out.println(cardPayment);
-//		
-//		System.out.println("------------------------------");
-//		
-//		Payments checkPayment = Payments.createPayment("Check");
-//		checkPayment.setAmount(225.72);
-//		checkPayment.setDate(LocalDateTime.now());
-//		System.out.println(checkPayment);		
-//	}
 }
-

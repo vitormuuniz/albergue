@@ -6,8 +6,10 @@ import java.util.Optional;
 import javax.validation.constraints.NotNull;
 
 import br.com.albergue.domain.Customer;
+import br.com.albergue.domain.Payments;
 import br.com.albergue.domain.Reservation;
 import br.com.albergue.repository.CustomerRepository;
+import br.com.albergue.repository.PaymentsRepository;
 
 public class ReservationForm {
 	
@@ -17,6 +19,8 @@ public class ReservationForm {
 	LocalDate checkinDate;
 	@NotNull
 	LocalDate checkoutDate;
+	@NotNull 
+	private Payments payments;
 	@NotNull
 	private
 	Long customer_ID;
@@ -57,7 +61,16 @@ public class ReservationForm {
 		return customerRepository.findById(getCustomer_ID());
 	}
 	
-	public Reservation returnReservation() {
-		return new Reservation(reservationDate, checkinDate, checkoutDate);
+	public Payments getPayments() {
+		return payments;
+	}
+
+	public void setPayments(Payments payments) {
+		this.payments = payments;
+	}
+
+	public Reservation returnReservation(PaymentsRepository paymentsRepository) {
+		paymentsRepository.save(payments);
+		return new Reservation(reservationDate, checkinDate, checkoutDate, payments);
 	}
 }
