@@ -4,7 +4,6 @@ import java.time.LocalDate;
 
 import org.springframework.data.domain.Page;
 
-import br.com.albergue.domain.Address;
 import br.com.albergue.domain.Payments;
 import br.com.albergue.domain.Reservation;
 
@@ -34,6 +33,14 @@ public class ReservationDto {
 		return checkoutDate;
 	}
 	
+	public Payments getPayments() {
+		return payments;
+	}
+
+	public void setPayments(Payments payments) {
+		this.payments = payments;
+	}
+	
 	public static Page<ReservationDto> converter(Page<Reservation> reservation) {
 		//fazendo um map de topico para topicoDto
 		//TopicoDto::new -> recebe o proprio construtor que recebe um topico como parametro
@@ -41,13 +48,5 @@ public class ReservationDto {
 //		return topicos.stream().map(TopicoDto::new).collect(Collectors.toList());
 	
 		return reservation.map(ReservationDto::new);
-	}
-
-	public Payments getPayments() {
-		return payments;
-	}
-
-	public void setPayments(Payments payments) {
-		this.payments = payments;
 	}
 }

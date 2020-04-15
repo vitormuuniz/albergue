@@ -1,14 +1,16 @@
 package br.com.albergue.controller;
 
 import java.net.URI;
-import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
@@ -132,13 +134,20 @@ public class HostelController {
 	}
 	
 	@GetMapping("/reservations") // dto = saem da api e é retornado para o cliente
-	public Page<ReservationDto> listAllReservations(@RequestParam(required = false) LocalDate reservationDate,
+	public Page<ReservationDto> listAllReservations(@RequestParam(required = false) String name,
 			@PageableDefault(sort = "id", direction = Direction.DESC, page = 0, size = 10) Pageable pagination) {
-
-		if (reservationDate == null)
+		
+		if (name == null)
 			return ReservationDto.converter(reservationRepository.findAll(pagination));
-		else
-			return ReservationDto.converter(reservationRepository.findByReservationDate(reservationDate, pagination));
+		else {
+			Optional<Customer> customer = customerRepository.findByName(name);
+			if(customer.isPresent()) {
+				List<Reservation> reservations = customer.get().getReservations().stream().collect(Collectors.toList()); 
+				Page<Reservation> pageReservations = new PageImpl<>(reservations, pagination, reservations.size());
+				return ReservationDto.converter(pageReservations);
+			} else
+				return null;
+		}
 	}
 	
 	// @PathVariable indica que esse 'id' virá através da url com /topicos/id

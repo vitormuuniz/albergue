@@ -12,5 +12,4 @@ public class AlbergueSpringBootApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(AlbergueSpringBootApplication.class, args);
 	}
-
 }
