@@ -1,4 +1,4 @@
-package br.com.albergue.tests;
+package br.com.albergue.tests.customer;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -18,7 +18,7 @@ import br.com.albergue.domain.Room;
 import br.com.albergue.repository.RoomRepository;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @AutoConfigureMockMvc
 public class TestingGetMethods {
 
@@ -26,48 +26,10 @@ public class TestingGetMethods {
 	private TestRestTemplate restTemplate;
 	
 	@LocalServerPort
-	int port;
+	int port = 8080;
 	
-	@Autowired
-	private RoomRepository roomRepository;
-	
-	private String baseUrl = "http://localhost:" + port;
-	
-//	@Autowired
-//	RestTemplate restTemplate;
+	private final String baseUrl = "http://localhost:" + port;
 
-
-//	@TestConfiguration
-//	static class Config {
-//		@Bean
-//		public RestTemplateBuilder restTemplateBuilder() {
-//			return new RestTemplateBuilder().basicAuthentication("root", "root");
-//		}
-//	}
-
-//	@Test
-//	public void testAccessDenied() {
-//		System.out.println(port);
-//		restTemplate = restTemplate.withBasicAuth("teste", "teste");
-//		ResponseEntity<String> response = restTemplate.getForEntity("/auth", String.class);
-//		Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(403);
-//	}
-
-	@Test
-	public void testListAllRoomsMethodWithoutParam() throws URISyntaxException {
-
-		URI uri = new URI(baseUrl + "/api/rooms");
-
-		Room room = new Room(1, 230.0);
-		roomRepository.save(room);
-//		ResponseEntity<String> result = restTemplate.postForEntity(uri, room, String.class);
-		ResponseEntity<String> result = restTemplate.getForEntity(uri, String.class);
-
-		System.out.println(result.getBody());
-		// Verify request succeed
-		Assert.assertEquals(200, result.getStatusCodeValue());
-	}
-	
 	@Test
 	public void testListAllCustomersMethodWithoutParam() throws URISyntaxException {
 
