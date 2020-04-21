@@ -8,6 +8,9 @@ public class RoomDto {
 
 	int number;
 	double dimension;
+	
+	public RoomDto() {
+	}
 
 	public RoomDto(Room room) {
 		this.number = room.getNumber();

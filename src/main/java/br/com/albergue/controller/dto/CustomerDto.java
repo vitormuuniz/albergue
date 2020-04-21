@@ -20,6 +20,9 @@ public class CustomerDto {
 	private String email;
 	private String password;
     private Set<Reservation> reservations;
+    
+    public CustomerDto() {
+	}
 
 	public CustomerDto(Customer customer) {
 		this.id = customer.getId();
