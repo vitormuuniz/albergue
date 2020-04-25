@@ -14,6 +14,9 @@ public class ReservationDto {
 	private LocalDate checkoutDate;
 	private Payments payments;
 	
+	public ReservationDto() {
+	}
+	
 	public ReservationDto(Reservation reservation) {
 		this.reservationDate = reservation.getReservationDate();
 		this.checkinDate =  reservation.getCheckinDate();

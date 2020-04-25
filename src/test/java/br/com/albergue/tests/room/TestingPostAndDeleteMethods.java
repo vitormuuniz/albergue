@@ -29,7 +29,7 @@ import br.com.albergue.domain.Room;
 import br.com.albergue.repository.RoomRepository;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @FixMethodOrder(MethodSorters.JVM)
 public class TestingPostAndDeleteMethods {
 
@@ -40,22 +40,21 @@ public class TestingPostAndDeleteMethods {
 	private RoomRepository roomRepository;
 
 	@LocalServerPort
-	int port = 8080;
+	private int port;
 
-	private String baseUrl = "http://localhost:" + port;
 	private URI uri;
 	private ResponseEntity<TokenDto> auth;
 	private HttpHeaders headers;
 
 	@Before
 	public void init() throws URISyntaxException {
-		uri = new URI(baseUrl + "/api/rooms");
+		uri = new URI("/api/rooms");
 
 		// login
 		LoginForm login = new LoginForm();
 		login.setEmail("aluno@email.com");
 		login.setPassword("123456");
-		auth = restTemplate.postForEntity(baseUrl + "/auth", login, TokenDto.class);
+		auth = restTemplate.postForEntity("/auth", login, TokenDto.class);
 
 		// getting authorization
 		headers = new HttpHeaders();

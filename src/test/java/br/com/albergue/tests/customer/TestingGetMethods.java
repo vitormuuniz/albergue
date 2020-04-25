@@ -22,7 +22,7 @@ import br.com.albergue.repository.AddressRepository;
 import br.com.albergue.repository.CustomerRepository;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 public class TestingGetMethods {
 
@@ -36,17 +36,16 @@ public class TestingGetMethods {
 	AddressRepository addressRepository;
 	
 	@LocalServerPort
-	int port = 8080;
+	private int port;
 	
 	private URI uri;
-	private String baseUrl = "http://localhost:" + port;
 	private Address address = new Address();
 	private Customer customer = new Customer();
 
 	@Before
 	public void init() throws URISyntaxException {
 		
-		uri = new URI(baseUrl + "/api/customers");
+		uri = new URI("/api/customers");
 
 		// setting address to put into the customer paramseters
 		address.setAddressName("rua tal");

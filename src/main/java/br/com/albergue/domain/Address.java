@@ -26,7 +26,6 @@ public class Address implements Serializable {
 	@Column(nullable=false)
 	private String country;
 	
-  
 	public Long getId() {
 		return this.id;
 	}
