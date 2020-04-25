@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -28,7 +29,9 @@ public abstract class Payments {
 	@GeneratedValue(generator = "PaymentIdGenerator")
 	private Long id;
 	
+	@NotNull
 	protected double amount;
+	@NotNull
 	protected LocalDateTime dateTime;
 	
 	public static Payments createPayment(String type) {

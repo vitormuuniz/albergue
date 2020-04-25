@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class Reservation {
@@ -19,15 +20,20 @@ public class Reservation {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	private String reservationCode;
+	@NotNull
 	private int numberOfGuests;
+	@NotNull
 	private LocalDate reservationDate;
+	@NotNull
 	private LocalDate checkinDate;
+	@NotNull
 	private LocalDate checkoutDate;
+	
 	@OneToMany
 	private Set<Room> rooms = new HashSet<>();
 	@OneToOne
 	@JoinColumn(name = "payments_ID", nullable = false)
+	@NotNull
 	private Payments payment;
 	
 	public Reservation(LocalDate reservationDate, LocalDate checkinDate, LocalDate checkoutDate, Payments payment) {
@@ -71,31 +77,6 @@ public class Reservation {
 
 	public Set<Room> getRooms() {
 		return rooms;
-	}
-
-//	public Payments createPayment(String type) {
-//		if (payment == null) {
-//			payment = Payments.createPayment(type);
-//		}
-//		return payment;
-//	}
-
-//	// TODO Implement the business logic
-//	public double calculateTotalAmount() {
-//		double amount = 0.0;
-//		int numberOfDays = 0; //
-//		for (Room room : rooms) {
-//
-//		}
-//		return 0.0;
-//	}
-
-	public String getReservationCode() {
-		return reservationCode;
-	}
-
-	public void setReservationCode(String reservationCode) {
-		this.reservationCode = reservationCode;
 	}
 
 	public int getNumberOfGuests() {
