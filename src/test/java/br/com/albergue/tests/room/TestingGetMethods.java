@@ -18,26 +18,25 @@ import br.com.albergue.domain.Room;
 import br.com.albergue.repository.RoomRepository;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class TestingGetMethods {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
 	
 	@LocalServerPort
-	int port = 8080;
+	private int port;
 	
 	@Autowired
 	private RoomRepository roomRepository;
 	
-	private String baseUrl = "http://localhost:" + port;
 	private URI uri;
 	private Room room;
 	
 	@Before
 	public void init() throws URISyntaxException {
 
-		uri = new URI(baseUrl + "/api/rooms");
+		uri = new URI("/api/rooms");
 
 		room = new Room(13, 230.0);
 		roomRepository.save(room);

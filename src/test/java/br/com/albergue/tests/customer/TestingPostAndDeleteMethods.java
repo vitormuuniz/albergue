@@ -31,7 +31,7 @@ import br.com.albergue.domain.Customer;
 import br.com.albergue.repository.CustomerRepository;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @FixMethodOrder(MethodSorters.JVM) //rodar os testes na ordem de escrita
 public class TestingPostAndDeleteMethods {
 
@@ -42,9 +42,8 @@ public class TestingPostAndDeleteMethods {
 	CustomerRepository customerRepository;
 
 	@LocalServerPort
-	int port = 8080;
+	private int port;
 
-	private String baseUrl = "http://localhost:" + port;
 	private URI uri;
 	private ResponseEntity<TokenDto> auth;
 	private HttpHeaders headers;
@@ -53,13 +52,13 @@ public class TestingPostAndDeleteMethods {
 
 	@Before
 	public void init() throws URISyntaxException {
-		uri = new URI(baseUrl + "/api/customers");
+		uri = new URI("/api/customers");
 
 		// login
 		LoginForm login = new LoginForm();
 		login.setEmail("aluno@email.com");
 		login.setPassword("123456");
-		auth = restTemplate.postForEntity(baseUrl + "/auth", login, TokenDto.class);
+		auth = restTemplate.postForEntity("/auth", login, TokenDto.class);
 
 		// getting authorization
 		headers = new HttpHeaders();

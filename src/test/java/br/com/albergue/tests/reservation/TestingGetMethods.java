@@ -20,30 +20,37 @@ import br.com.albergue.domain.CashPayment;
 import br.com.albergue.domain.Payments;
 import br.com.albergue.domain.Reservation;
 import br.com.albergue.domain.Room;
+import br.com.albergue.repository.PaymentsRepository;
 import br.com.albergue.repository.ReservationRepository;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class TestingGetMethods {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
 	
 	@LocalServerPort
-	int port = 8080;
+	private int port;
 	
 	@Autowired
 	private ReservationRepository reservationRepository;
 	
-	private final String baseUrl = "http://localhost:" + port;
+	@Autowired
+	private PaymentsRepository paymentsRepository;
+
+	private URI uri;
 	private Reservation reservation = new Reservation();
 	private CashPayment cash = new CashPayment();
-	private Payments payments;
 	
 	@Before
-	public void init() {
-		cash.setAmount(5000);
+	public void init() throws URISyntaxException {
+		uri = new URI("/api/reservations");
+		
+		cash.setAmountTendered(5000.0);
+		cash.setAmount(5000.0);
 		cash.setDate(LocalDateTime.now());
+		paymentsRepository.save(cash);
 		
 		reservation.setCheckinDate(LocalDate.of(2012, 12, 12));
 		reservation.setCheckoutDate(LocalDate.of(2012, 12, 17));
@@ -56,8 +63,6 @@ public class TestingGetMethods {
 	
 	@Test
 	public void testListAllReservationsMethodWithoutParam() throws URISyntaxException {
-
-		URI uri = new URI(baseUrl + "/api/reservations");
 
 		ResponseEntity<String> result = restTemplate.getForEntity(uri, String.class);
 
