@@ -10,6 +10,4 @@ import br.com.albergue.domain.Reservation;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long>{
 	
-	Page<Reservation> findByReservationDate(LocalDate date, Pageable paginacao);
-
 }
