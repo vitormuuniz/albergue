@@ -1,6 +1,6 @@
 package br.com.albergue.tests.reservation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -9,10 +9,11 @@ import java.util.Optional;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -26,14 +27,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 import br.com.albergue.controller.dto.ReservationDto;
 import br.com.albergue.controller.dto.TokenDto;
 import br.com.albergue.controller.form.LoginForm;
-import br.com.albergue.domain.Customer;
 import br.com.albergue.domain.Reservation;
-import br.com.albergue.repository.CustomerRepository;
 import br.com.albergue.repository.ReservationRepository;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
+@FixMethodOrder(MethodSorters.JVM) //rodar os testes na ordem de escrita
 public class TestingPostAndDeleteMethods {
 
 	@Autowired
