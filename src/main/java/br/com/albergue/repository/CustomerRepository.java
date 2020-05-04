@@ -18,9 +18,9 @@ public interface CustomerRepository extends JpaRepository<Customer, Long>{
 	//seria findByCustomer_Nome
 	Page<Customer> findByName(String name, Pageable paginacao);
 	
+	Customer findByUsername(String username);
+	
 	Optional<Customer> findByName(String name);
-
-	Optional<Customer> findByEmail(String email);
 	
 	Address findByAddressId(Long id);
 	

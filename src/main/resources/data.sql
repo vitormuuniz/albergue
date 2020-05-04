@@ -1,2 +1,4 @@
 insert into address(address_name, zip_code, city, state, country) values('rua 2', '13901264', 'amparo', 'sp', 'brasil');
-INSERT INTO Customer(title, name, last_Name, birthday, address_ID, email, password) VALUES('MRS.', 'Aluno', '2', DATE('2019-09-01'), 1, 'aluno@email.com', '$2a$10$ztYTBinS/LitQOno2jjwf.x7aNLRPs0iO1pIQ9ITqtNwTMybwV/MW');
+insert into address(address_name, zip_code, city, state, country) values('rua 3', '13901265', 'amparo', 'sp', 'brasil');
+INSERT INTO Customer(title, name, last_Name, birthday, address_ID, username, password, admin) VALUES('MRS.', 'Aluno', '2', DATE('2019-09-01'), 1, 'admin', '$2a$10$ztYTBinS/LitQOno2jjwf.x7aNLRPs0iO1pIQ9ITqtNwTMybwV/MW', TRUE);
+INSERT INTO Customer(title, name, last_Name, birthday, address_ID, username, password, admin) VALUES('MRS.', 'Aluno', '3', DATE('2019-09-01'), 1, 'user', '$2a$10$ztYTBinS/LitQOno2jjwf.x7aNLRPs0iO1pIQ9ITqtNwTMybwV/MW', FALSE);

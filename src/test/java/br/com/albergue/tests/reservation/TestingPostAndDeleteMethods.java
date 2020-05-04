@@ -24,8 +24,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import br.com.albergue.controller.dto.ReservationDto;
-import br.com.albergue.controller.dto.TokenDto;
-import br.com.albergue.controller.form.LoginForm;
 import br.com.albergue.domain.Customer;
 import br.com.albergue.domain.Reservation;
 import br.com.albergue.repository.CustomerRepository;
@@ -46,7 +44,7 @@ public class TestingPostAndDeleteMethods {
 	ReservationRepository reservationRepository;
 	
 	private URI uri;
-	private ResponseEntity<TokenDto> auth;
+	//private ResponseEntity<TokenDto> auth;
 	private HttpHeaders headers;
 	
 	@Before
@@ -54,15 +52,15 @@ public class TestingPostAndDeleteMethods {
 		uri = new URI("/api/reservations");
 		
 		//login
-		LoginForm login = new LoginForm();
-		login.setEmail("aluno@email.com");
-		login.setPassword("123456");
-		auth = restTemplate.postForEntity("/auth", login, TokenDto.class);
+//		LoginForm login = new LoginForm();
+//		login.setEmail("aluno@email.com");
+//		login.setPassword("123456");
+//		auth = restTemplate.postForEntity("/auth", login, TokenDto.class);
 		
 		//getting authorization
-		headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.set("Authorization", "Bearer "+ auth.getBody().getToken());
+//		headers = new HttpHeaders();
+//		headers.setContentType(MediaType.APPLICATION_JSON);
+//		headers.set("Authorization", "Bearer "+ auth.getBody().getToken());
 		
 	}
 	

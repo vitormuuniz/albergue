@@ -24,7 +24,9 @@ public class CustomerForm {
 	@NotNull 
 	private Address address;
 	@NotNull 
-	private String email;
+	private String username;
+	@NotNull 
+	private boolean admin;
 	@NotNull 
 	private String password;
 	
@@ -68,12 +70,12 @@ public class CustomerForm {
 		this.birthday = birthday;
 	}
 	
-	public String getEmail() {
-		return email;
+	public String getUsername() {
+		return username;
 	}
 	
-	public void setEmail(String email) {
-		this.email = email;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 	
 	public String getPassword() {
@@ -84,8 +86,16 @@ public class CustomerForm {
 		this.password = password;
 	}
 
+	public boolean isAdmin() {
+		return admin;
+	}
+
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
+	}
+
 	public Customer returnCustomer(AddressRepository addressRepository) {
 		addressRepository.save(address);
-		return new Customer(title, name, lastname, birthday, address, email, new BCryptPasswordEncoder().encode(password));
+		return new Customer(title, name, lastname, birthday, address, username, new BCryptPasswordEncoder().encode(password), admin);
 	}
 }

@@ -24,8 +24,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import br.com.albergue.controller.dto.CustomerDto;
-import br.com.albergue.controller.dto.TokenDto;
-import br.com.albergue.controller.form.LoginForm;
 import br.com.albergue.domain.Address;
 import br.com.albergue.domain.Customer;
 import br.com.albergue.repository.CustomerRepository;
@@ -45,7 +43,7 @@ public class TestingPostAndDeleteMethods {
 	private int port;
 
 	private URI uri;
-	private ResponseEntity<TokenDto> auth;
+	//private ResponseEntity<TokenDto> auth;
 	private HttpHeaders headers;
 	private Address address = new Address();
 	private Customer customer = new Customer();
@@ -55,15 +53,15 @@ public class TestingPostAndDeleteMethods {
 		uri = new URI("/api/customers");
 
 		// login
-		LoginForm login = new LoginForm();
-		login.setEmail("aluno@email.com");
-		login.setPassword("123456");
-		auth = restTemplate.postForEntity("/auth", login, TokenDto.class);
+		//LoginForm login = new LoginForm();
+//		login.setEmail("aluno@email.com");
+//		login.setPassword("123456");
+//		auth = restTemplate.postForEntity("/auth", login, TokenDto.class);
 
 		// getting authorization
-		headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.set("Authorization", "Bearer " + auth.getBody().getToken());
+//		headers = new HttpHeaders();
+//		headers.setContentType(MediaType.APPLICATION_JSON);
+//		headers.set("Authorization", "Bearer " + auth.getBody().getToken());
 
 		// setting address to put into the customer paramseters
 		address.setAddressName("rua tal");
@@ -76,7 +74,7 @@ public class TestingPostAndDeleteMethods {
 		customer.setLastName("aaaaaaaaaa");
 		customer.setAddress(address);
 		customer.setBirthday(LocalDate.of(1900, 12, 12));
-		customer.setEmail("washington@orkut.com");
+		//customer.setEmail("washington@orkut.com");
 		customer.setName("Washington");
 		customer.setTitle("MRS.");
 		customer.setPassword("1234567");

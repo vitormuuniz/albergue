@@ -12,6 +12,8 @@ import javax.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Entity implementation class for Entity: Customer
  *
@@ -34,13 +36,15 @@ public class Customer implements UserDetails {
 	private String lastName;
 	@Column(nullable = false)
 	private LocalDate birthday;
-	@OneToOne(cascade=CascadeType.REMOVE)
+	@OneToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name = "address_ID", nullable = false)
 	private Address address;
 	@Column(nullable = false)
-	private String email;
+	private String username;
 	@Column(nullable = false)
 	private String password;
+	@Column(nullable = false)
+	private boolean admin;
 	
 	@Column(name="perfis") @OneToMany(fetch = FetchType.EAGER)
 	private List<Perfil> perfis = new ArrayList<>();
@@ -53,15 +57,16 @@ public class Customer implements UserDetails {
 		
 	}
 	
-	public Customer(String title, String name, String lastName, LocalDate birthday, Address address, String email,
-			String password) {
+	public Customer(String title, String name, String lastName, LocalDate birthday, Address address, String username,
+			String password, boolean admin) {
 		this.title = title;
 		this.name = name;
 		this.lastName = lastName;
 		this.birthday = birthday;
 		this.address = address;
-		this.email = email;
+		this.username = username;
 		this.password = password;
+		this.admin = admin;
 	}
 
 
@@ -131,12 +136,9 @@ public class Customer implements UserDetails {
 		this.birthday = birthday;
 	}
 
-	public String getEmail() {
-		return this.email;
-	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public Address getAddress() {
@@ -163,7 +165,7 @@ public class Customer implements UserDetails {
 
 	@Override
 	public String getUsername() {
-		return this.email;
+		return this.username;
 	}
 
 	@Override
@@ -174,6 +176,14 @@ public class Customer implements UserDetails {
 	@Override
 	public boolean isAccountNonLocked() {
 		return true;
+	}
+
+	public boolean isAdmin() {
+		return admin;
+	}
+
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
 	}
 
 	@Override

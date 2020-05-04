@@ -17,8 +17,9 @@ public class CustomerDto {
 	private String lastname;
 	private LocalDate birthday;
 	private Address address;
-	private String email;
+	private String username;
 	private String password;
+	private boolean admin;
     private Set<Reservation> reservations;
     
     public CustomerDto() {
@@ -31,8 +32,9 @@ public class CustomerDto {
 		this.lastname = customer.getLastName();
 		this.birthday = customer.getBirthday();
 		this.address = customer.getAddress();
-		this.email = customer.getEmail();
+		this.username = customer.getUsername();
 		this.password = customer.getPassword();
+		this.admin = customer.isAdmin();
 		this.reservations = customer.getReservations();
 	}
 	
@@ -59,13 +61,17 @@ public class CustomerDto {
 	public Address getAddress() {
 		return address;
 	}
-
-	public String getEmail() {
-		return email;
+	
+	public String getUsername() {
+		return username;
 	}
 	
 	public String getPassword() {
 		return password;
+	}
+	
+	public boolean isAdmin() {
+		return admin;
 	}
 	
 	public Set<Reservation> getReservations() {

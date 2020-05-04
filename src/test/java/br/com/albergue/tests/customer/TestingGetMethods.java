@@ -58,7 +58,7 @@ public class TestingGetMethods {
 		customer.setLastName("aaaaaaaaaa");
 		customer.setAddress(address);
 		customer.setBirthday(LocalDate.of(1900, 12, 12));
-		customer.setEmail("washington@orkut.com");
+		//customer.setEmail("washington@orkut.com");
 		customer.setName("Washington");
 		customer.setTitle("MRS.");
 		customer.setPassword("1234567");
