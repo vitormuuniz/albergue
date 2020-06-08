@@ -1,4 +1,4 @@
-package br.com.albergue.tests.room;
+package br.com.albergue.tests.post;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.util.Date;
 
 import org.junit.Before;
@@ -29,19 +30,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.albergue.controller.AutenticationController;
 import br.com.albergue.controller.dto.TokenDto;
+import br.com.albergue.domain.Address;
 import br.com.albergue.domain.Customer;
-import br.com.albergue.domain.Room;
-import br.com.albergue.repository.RoomRepository;
+import br.com.albergue.repository.AddressRepository;
+import br.com.albergue.repository.CustomerRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
-public class TestingPostAndDeleteMethods2 {
+public class CustomerPostAndDeleteTests2 {
 
 	@MockBean
-	RoomRepository roomRepository;
+	CustomerRepository customerRepository;
+	
+	@MockBean
+	AddressRepository addressRepository;
 	
 	@MockBean
 	private AutenticationController autentication;
@@ -60,16 +65,31 @@ public class TestingPostAndDeleteMethods2 {
 
 	private URI uri;
 	private HttpHeaders headers = new HttpHeaders();
-	private Customer customer = Mockito.mock(Customer.class);
+	private Address address = new Address();
+	private Customer customer = new Customer();
 	private String token;
-	private Room room = new Room(1, 230.0);
-
+	
 	@Before
 	public void init() throws URISyntaxException {
-		uri = new URI("/api/rooms");
+		uri = new URI("/api/customers");
 
-		//mocking getid to generate token
-		Mockito.when(customer.getId()).thenReturn(1L);
+		// setting address to put into the customer paramseters
+		address.setAddressName("rua tal");
+		address.setCity("alguma");
+		address.setCountry("algum");
+		address.setState("XXX");
+		address.setZipCode("xxxx-xxx");
+		address.setId(1L);
+		
+		// setting customer
+		customer.setAddress(address);
+		customer.setBirthday(LocalDate.of(1900, 12, 12));
+		customer.setEmail("washington@orkut.com");
+		customer.setName("Washington");
+		customer.setLastName("Ferrolho");
+		customer.setTitle("MRS.");
+		customer.setPassword("1234567");
+		customer.setId(1L);
 		
 		//generating token to autentication
 		Date hoje = new Date();
@@ -94,16 +114,18 @@ public class TestingPostAndDeleteMethods2 {
 
 	@Test
 	public void test() throws Exception {
-		Mockito.when(roomRepository.save(Mockito.any())).thenReturn(room);
-
+		Mockito.when(customerRepository.save(Mockito.any())).thenReturn(customer);
+		Mockito.when(addressRepository.save(Mockito.any())).thenReturn(address);
+		
 		MvcResult result = mockMvc.perform(post(uri)
 						.headers(headers)
-						.content(objectMapper.writeValueAsString(room)))
+						.content(objectMapper.writeValueAsString(customer)))
 						.andDo(print())
 						.andExpect(status().isCreated())
 						.andReturn();
 		
-		assertTrue(result.getResponse().getContentAsString().contains("\"number\":1"));
+		assertTrue(result.getResponse().getContentAsString().contains("\"name\":\"Washington\""));
+
 	}
 
 //	@Test

@@ -1,4 +1,4 @@
-package br.com.albergue.tests.customer;
+package br.com.albergue.tests.get;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -33,7 +33,7 @@ import br.com.albergue.repository.CustomerRepository;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
-public class TestingGetMethods2 {
+public class CustomerGetTests2 {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -73,7 +73,7 @@ public class TestingGetMethods2 {
 	}
 
 	@Test
-	public void testListAllCustomersMethodWithoutParam() throws Exception {
+	public void shouldReturnOneCustomerWithoutParamAndStatusOk() throws Exception {
 		List<Customer> cust = new ArrayList<>();
 		cust.add(customer);
 		when(customerRepository.findAll()).thenReturn(cust);
@@ -90,12 +90,12 @@ public class TestingGetMethods2 {
 	}
 
 	@Test
-	public void testListAllCustomersMethodByParam() throws Exception {
+	public void shouldReturnOneCustomerByParamAndStatusOk() throws Exception {
 
 		List<Customer> cust = new ArrayList<>();
 		cust.add(customer);
 
-		when(customerRepository.findByName(eq(customer.getName()), any())).thenReturn(cust);
+		when(customerRepository.findByName(eq(customer.getName()))).thenReturn(cust);
 		MvcResult result = 
 				mockMvc.perform(get(uri + "?name=Washington"))
 				.andDo(print())
@@ -107,7 +107,7 @@ public class TestingGetMethods2 {
 	}
 
 	@Test
-	public void testListAllCustomersMethodById() throws Exception {
+	public void shouldReturnOneCustomerByIdAndStatusOk() throws Exception {
 
 		Optional<Customer> opcust = Optional.of(customer);
 		when(customerRepository.findById(eq(customer.getId()))).thenReturn(opcust);
@@ -124,22 +124,15 @@ public class TestingGetMethods2 {
 	}
 
 	@Test
-	public void testListAllCustomersMethodWithWrongParam() throws Exception {
+	public void shouldNotReturnAnyCustomerByWrongParamAndStatusNotFound() throws Exception {
 
 		List<Customer> cust = new ArrayList<>();
 		cust.add(customer);
 
-		when(customerRepository.findByName(eq(customer.getName()), any())).thenReturn(cust);
-		MvcResult result = 
-				mockMvc.perform(get(uri + "?name=Washington222"))
+		when(customerRepository.findByName(eq(customer.getName()))).thenReturn(cust);
+		mockMvc.perform(get(uri + "?name=Washington222"))
 				.andDo(print())
-				.andExpect(status().isOk())
+				.andExpect(status().isNotFound())
 				.andReturn();
-
-		String content = result.getResponse().getContentAsString();
-		
-		// Verify request succeed
-		assertEquals(200, result.getResponse().getStatus());
-		assertFalse(content.contains("\"name\":\"Washington\""));
 	}
 }
