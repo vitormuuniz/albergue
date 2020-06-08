@@ -1,8 +1,8 @@
 package br.com.albergue.repository;
 
+import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -16,7 +16,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long>{
 	
 	//se houver uma variavel customerNome, para pegar a variavel nome dentro de Curso
 	//seria findByCustomer_Nome
-	Page<Customer> findByName(String name, Pageable paginacao);
+	List<Customer> findByName(String name, Pageable paginacao);
 	
 	Optional<Customer> findByName(String name);
 

@@ -1,6 +1,7 @@
 package br.com.albergue.controller;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -79,13 +80,13 @@ public class HostelController {
 	// sejam passados parametros
 
 	@GetMapping("/customers") // dto = saem da api e é retornado para o cliente
-	public Page<CustomerDto> listAllCustomers(@RequestParam(required = false) String name,
-			@PageableDefault(sort = "id", direction = Direction.DESC, page = 0, size = 10) Pageable pagination) {
+	public ResponseEntity<List<CustomerDto>> listAllCustomers(@RequestParam(required = false) String name,
+			@PageableDefault(sort = "id", direction = Direction.DESC, page = 0, size = 10) Pageable pagination) throws URISyntaxException {
 
-		if (name == null)
-			return CustomerDto.converter(customerRepository.findAll(pagination));
+		if (name == null) 
+			return ResponseEntity.ok(CustomerDto.converter(customerRepository.findAll()));
 		else
-			return CustomerDto.converter(customerRepository.findByName(name, pagination));
+			return ResponseEntity.ok(CustomerDto.converter(customerRepository.findByName(name, pagination)));
 	}
 
 	// @PathVariable indica que esse 'id' virá através da url com /topicos/id
@@ -130,21 +131,20 @@ public class HostelController {
 			URI uri = uriBuilder.path("/reservations/{id}").buildAndExpand(customer.getId()).toUri();
 			return ResponseEntity.created(uri).body(new ReservationDto(reservation));
 		} else 
-			return (ResponseEntity<ReservationDto>) ResponseEntity.badRequest();
+			return ResponseEntity.notFound().build();
 	}
 	
 	@GetMapping("/reservations") // dto = saem da api e é retornado para o cliente
-	public Page<ReservationDto> listAllReservations(@RequestParam(required = false) String name,
+	public ResponseEntity<List<ReservationDto>> listAllReservations(@RequestParam(required = false) String name,
 			@PageableDefault(sort = "id", direction = Direction.DESC, page = 0, size = 10) Pageable pagination) {
 		
 		if (name == null)
-			return ReservationDto.converter(reservationRepository.findAll(pagination));
+			return ResponseEntity.ok(ReservationDto.converter(reservationRepository.findAll()));
 		else {
 			Optional<Customer> customer = customerRepository.findByName(name);
 			if(customer.isPresent()) {
 				List<Reservation> reservations = customer.get().getReservations().stream().collect(Collectors.toList()); 
-				Page<Reservation> pageReservations = new PageImpl<>(reservations, pagination, reservations.size());
-				return ReservationDto.converter(pageReservations);
+				return ResponseEntity.ok(ReservationDto.converter(reservations));
 			} else
 				return null;
 		}
@@ -187,13 +187,13 @@ public class HostelController {
 	}
 	
 	@GetMapping("/rooms") // dto = saem da api e é retornado para o cliente
-	public Page<RoomDto> listAllRooms(@RequestParam(required = false) Integer number,
+	public ResponseEntity<List<RoomDto>> listAllRooms(@RequestParam(required = false) Integer number,
 			@PageableDefault(sort = "id", direction = Direction.DESC, page = 0, size = 10) Pageable pagination) {
 
 		if (!(number instanceof Integer))
-			return RoomDto.converter(roomRepository.findAll(pagination));
+			return ResponseEntity.ok(RoomDto.converter(roomRepository.findAll()));
 		else
-			return RoomDto.converter(roomRepository.findByNumber(number, pagination));
+			return ResponseEntity.ok(RoomDto.converter(roomRepository.findByNumber(number, pagination)));
 	}
 	
 	// @PathVariable indica que esse 'id' virá através da url com /topicos/id

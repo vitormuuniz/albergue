@@ -1,6 +1,8 @@
 package br.com.albergue.controller.dto;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.domain.Page;
@@ -76,12 +78,15 @@ public class CustomerDto {
 		this.reservations = reservations;
 	}
 
-	public static Page<CustomerDto> converter(Page<Customer> customer) {
+	public static List<CustomerDto> converter(List<Customer> customersList) {
 		//fazendo um map de topico para topicoDto
 		//TopicoDto::new -> recebe o proprio construtor que recebe um topico como parametro
 		//collect() -> transforma essa saida em uma lista
 //		return topicos.stream().map(TopicoDto::new).collect(Collectors.toList());
-	
-		return customer.map(CustomerDto::new);
+		List<CustomerDto> customersDtoList = new ArrayList<>();
+		for(Customer c : customersList) {
+			customersDtoList.add(new CustomerDto(c));
+		}
+		return customersDtoList;
 	}
 }
