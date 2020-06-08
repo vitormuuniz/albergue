@@ -4,14 +4,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-
-import br.com.albergue.domain.Customer;
 import br.com.albergue.domain.Payments;
 import br.com.albergue.domain.Reservation;
 
 public class ReservationDto {
 
+	private Long id;
 	private LocalDate reservationDate;
 	private LocalDate checkinDate;
 	private LocalDate checkoutDate;
@@ -21,10 +19,15 @@ public class ReservationDto {
 	}
 	
 	public ReservationDto(Reservation reservation) {
+		this.id = reservation.getId();
 		this.reservationDate = reservation.getReservationDate();
 		this.checkinDate =  reservation.getCheckinDate();
 		this.checkoutDate = reservation.getCheckoutDate();
 		this.payments = reservation.getPayment();
+	}
+
+	public Long getId() {
+		return id;
 	}
 
 	public LocalDate getReservationDate() {

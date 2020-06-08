@@ -46,6 +46,14 @@ public class Reservation {
 	public Reservation() {
 		this.reservationDate = LocalDate.now();
 	}
+	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public LocalDate getReservationDate() {
 		return reservationDate;

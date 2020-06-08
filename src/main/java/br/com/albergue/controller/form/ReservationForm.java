@@ -57,10 +57,6 @@ public class ReservationForm {
 		this.customer_ID = customer_ID;
 	}
 	
-	public Optional<Customer> returnCustomer(CustomerRepository customerRepository) {
-		return customerRepository.findById(getCustomer_ID());
-	}
-	
 	public Payments getPayments() {
 		return payments;
 	}
@@ -69,6 +65,10 @@ public class ReservationForm {
 		this.payments = payments;
 	}
 
+	public Optional<Customer> returnCustomer(CustomerRepository customerRepository) {
+		return customerRepository.findById(getCustomer_ID());
+	}
+	
 	public Reservation returnReservation(PaymentsRepository paymentsRepository) {
 		paymentsRepository.save(payments);
 		return new Reservation(reservationDate, checkinDate, checkoutDate, payments);

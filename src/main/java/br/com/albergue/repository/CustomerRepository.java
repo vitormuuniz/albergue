@@ -3,7 +3,6 @@ package br.com.albergue.repository;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import br.com.albergue.domain.Address;
@@ -16,10 +15,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Long>{
 	
 	//se houver uma variavel customerNome, para pegar a variavel nome dentro de Curso
 	//seria findByCustomer_Nome
-	List<Customer> findByName(String name, Pageable paginacao);
+	List<Customer> findByName(String nome);
 	
-	Optional<Customer> findByName(String name);
-
 	Optional<Customer> findByEmail(String email);
 	
 	Address findByAddressId(Long id);

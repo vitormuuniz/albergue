@@ -9,7 +9,7 @@ import br.com.albergue.domain.Room;
 
 public interface RoomRepository extends JpaRepository<Room, Long>{
 
-	List<Room> findByNumber(int number, Pageable pagination);
+	List<Room> findByNumber(int number);
 	
 
 }

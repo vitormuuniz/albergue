@@ -2,6 +2,7 @@ package br.com.albergue.controller;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -10,8 +11,6 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
@@ -56,13 +55,13 @@ public class HostelController {
 
 	@Autowired
 	private RoomRepository roomRepository;
-	
+
 	@Autowired
 	private PaymentsRepository paymentsRepository;
-	
-	
+
 	@PostMapping("/customers") // chegam do cliente para a api
-	public ResponseEntity<CustomerDto> registerCustomer(@RequestBody @Valid CustomerForm form, UriComponentsBuilder uriBuilder) {
+	public ResponseEntity<CustomerDto> registerCustomer(@RequestBody @Valid CustomerForm form,
+			UriComponentsBuilder uriBuilder) {
 		Customer customer = form.returnCustomer(addressRepository);
 		customerRepository.save(customer);
 
@@ -73,7 +72,7 @@ public class HostelController {
 		URI uri = uriBuilder.path("/customers/{id}").buildAndExpand(customer.getId()).toUri();
 		return ResponseEntity.created(uri).body(new CustomerDto(customer));
 	}
-	
+
 	// @RequestParam indica que os parametros irão vir pela url e que são
 	// obrigatórios
 	// @PageableDefault serve para dizer qual ordenação deverá ser feita caso não
@@ -81,12 +80,20 @@ public class HostelController {
 
 	@GetMapping("/customers") // dto = saem da api e é retornado para o cliente
 	public ResponseEntity<List<CustomerDto>> listAllCustomers(@RequestParam(required = false) String name,
-			@PageableDefault(sort = "id", direction = Direction.DESC, page = 0, size = 10) Pageable pagination) throws URISyntaxException {
+			@PageableDefault(sort = "id", direction = Direction.DESC, page = 0, size = 10) Pageable pagination)
+			throws URISyntaxException {
 
-		if (name == null) 
-			return ResponseEntity.ok(CustomerDto.converter(customerRepository.findAll()));
+		List<CustomerDto> response = new ArrayList<>();
+		
+		if (name == null)
+			response = CustomerDto.converter(customerRepository.findAll());
 		else
-			return ResponseEntity.ok(CustomerDto.converter(customerRepository.findByName(name, pagination)));
+			response = CustomerDto.converter(customerRepository.findByName(name));
+
+		if (response.isEmpty() || response == null)
+			return ResponseEntity.notFound().build();
+		else
+			return ResponseEntity.ok(response);
 	}
 
 	// @PathVariable indica que esse 'id' virá através da url com /topicos/id
@@ -99,7 +106,7 @@ public class HostelController {
 		else
 			return ResponseEntity.notFound().build();
 	}
-	
+
 	@DeleteMapping("/customers/{id}")
 	@Transactional
 	public ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
@@ -110,69 +117,80 @@ public class HostelController {
 		} else
 			return ResponseEntity.notFound().build();
 	}
-	
+
 	@PostMapping("/reservations") // chegam do cliente para a api
-	public ResponseEntity<ReservationDto> registerReservation(@RequestBody @Valid ReservationForm form, UriComponentsBuilder uriBuilder) {
-		
+	public ResponseEntity<ReservationDto> registerReservation(@RequestBody @Valid ReservationForm form,
+			UriComponentsBuilder uriBuilder) {
+
 		Optional<Customer> customerOp = form.returnCustomer(customerRepository);
-		
-		if(customerOp.isPresent()) {
+
+		if (customerOp.isPresent()) {
 			Reservation reservation = form.returnReservation(paymentsRepository);
 			reservationRepository.save(reservation);
-			
+
 			Customer customer = customerOp.get();
 			customer.addReservation(reservation);
 			customerRepository.save(customer);
-			
+
 			// path indica o caminho do recurso sendo chamado (pra nao passar o caminho
 			// completo)
 			// buildAndExpend serve para pegar e substituir o id em {id} dinamicamente
 			// toUri para transformar na uri completa
 			URI uri = uriBuilder.path("/reservations/{id}").buildAndExpand(customer.getId()).toUri();
 			return ResponseEntity.created(uri).body(new ReservationDto(reservation));
-		} else 
+		} else
 			return ResponseEntity.notFound().build();
 	}
-	
+
 	@GetMapping("/reservations") // dto = saem da api e é retornado para o cliente
 	public ResponseEntity<List<ReservationDto>> listAllReservations(@RequestParam(required = false) String name,
 			@PageableDefault(sort = "id", direction = Direction.DESC, page = 0, size = 10) Pageable pagination) {
-		
+
+		List<ReservationDto> response = new ArrayList<>();
+
 		if (name == null)
-			return ResponseEntity.ok(ReservationDto.converter(reservationRepository.findAll()));
+			response = ReservationDto.converter(reservationRepository.findAll());
 		else {
-			Optional<Customer> customer = customerRepository.findByName(name);
-			if(customer.isPresent()) {
-				List<Reservation> reservations = customer.get().getReservations().stream().collect(Collectors.toList()); 
-				return ResponseEntity.ok(ReservationDto.converter(reservations));
-			} else
-				return null;
+			List<Customer> customerList = customerRepository.findByName(name);
+			if (!customerList.isEmpty()) {
+				List<Reservation> reservations = customerList.get(0).getReservations().stream()
+						.collect(Collectors.toList());
+
+				response = ReservationDto.converter(reservations);
+			}
 		}
+
+		if (response.isEmpty())
+			return ResponseEntity.notFound().build();
+		else
+			return ResponseEntity.ok(response);
 	}
-	
+
 	// @PathVariable indica que esse 'id' virá através da url com /topicos/id
 	// inves de ser passado com '?id='
 	@GetMapping("/reservations/{id}")
 	public ResponseEntity<ReservationDto> listOneReservation(@PathVariable Long id) {
 		Optional<Reservation> reservation = reservationRepository.findById(id);
+
 		if (reservation.isPresent())
 			return ResponseEntity.ok(new ReservationDto(reservation.get()));
 		else
 			return ResponseEntity.notFound().build();
 	}
-	
+
 	@DeleteMapping("/reservations/{id}")
 	@Transactional
 	public ResponseEntity<?> deleteReservation(@PathVariable Long id) {
 		Optional<Reservation> reservation = reservationRepository.findById(id);
+
 		if (reservation.isPresent()) {
 			reservationRepository.deleteById(id);
+
 			return ResponseEntity.ok().build();
 		} else
 			return ResponseEntity.notFound().build();
 	}
-	
-	
+
 	@PostMapping("/rooms") // chegam do cliente para a api
 	public ResponseEntity<RoomDto> registerRoom(@RequestBody @Valid RoomForm form, UriComponentsBuilder uriBuilder) {
 		Room room = form.returnRoom();
@@ -185,17 +203,24 @@ public class HostelController {
 		URI uri = uriBuilder.path("/rooms/{id}").buildAndExpand(room.getId()).toUri();
 		return ResponseEntity.created(uri).body(new RoomDto(room));
 	}
-	
+
 	@GetMapping("/rooms") // dto = saem da api e é retornado para o cliente
 	public ResponseEntity<List<RoomDto>> listAllRooms(@RequestParam(required = false) Integer number,
 			@PageableDefault(sort = "id", direction = Direction.DESC, page = 0, size = 10) Pageable pagination) {
 
+		List<RoomDto> response = new ArrayList<>();
+
 		if (!(number instanceof Integer))
-			return ResponseEntity.ok(RoomDto.converter(roomRepository.findAll()));
+			response = RoomDto.converter(roomRepository.findAll());
 		else
-			return ResponseEntity.ok(RoomDto.converter(roomRepository.findByNumber(number, pagination)));
+			response = RoomDto.converter(roomRepository.findByNumber(number));
+
+		if (response.isEmpty() || response == null)
+			return ResponseEntity.notFound().build();
+		else
+			return ResponseEntity.ok(response);
 	}
-	
+
 	// @PathVariable indica que esse 'id' virá através da url com /topicos/id
 	// inves de ser passado com '?id='
 	@GetMapping("/rooms/{id}")
@@ -206,7 +231,7 @@ public class HostelController {
 		else
 			return ResponseEntity.notFound().build();
 	}
-	
+
 	@DeleteMapping("/rooms/{id}")
 	@Transactional
 	public ResponseEntity<?> deleteRoom(@PathVariable Long id) {
