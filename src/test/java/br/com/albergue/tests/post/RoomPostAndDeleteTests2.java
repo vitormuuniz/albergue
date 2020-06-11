@@ -40,12 +40,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @AutoConfigureMockMvc
 public class RoomPostAndDeleteTests2 {
 
-	@MockBean
-	RoomRepository roomRepository;
-	
-	@MockBean
-	private AutenticationController autentication;
-
 	@Autowired
 	private MockMvc mockMvc;
 	
@@ -60,32 +54,24 @@ public class RoomPostAndDeleteTests2 {
 
 	private URI uri;
 	private HttpHeaders headers = new HttpHeaders();
-	private Customer customer = Mockito.mock(Customer.class);
 	private String token;
-	private Room room = new Room(1, 230.0);
+	private Room room = new Room(5, 230.0);
 
 	@Before
 	public void init() throws URISyntaxException {
 		uri = new URI("/api/rooms");
 
-		//mocking getid to generate token
-		Mockito.when(customer.getId()).thenReturn(1L);
-		
 		//generating token to autentication
 		Date hoje = new Date();
 		Date dataExpiracao = new Date(hoje.getTime() + Long.parseLong(expiration));
 		token = Jwts.builder()
 				.setIssuer("API do Albergue") // quem fez a geração do token
-				.setSubject(customer.getId().toString()) // usuario a quem esse token pertence
+				.setSubject(Long.toString(1L)) // usuario a quem esse token pertence
 				.setIssuedAt(hoje) // data de geração
 				.setExpiration(dataExpiracao) // data de expiração
 				.signWith(SignatureAlgorithm.HS256, secret) // usar a senha do application.properties / algoritmo de
 															// criptografia
 				.compact();
-		
-		//mocking autenticate return
-		Mockito.when(autentication.autenticate(Mockito.any()))
-				.thenReturn(ResponseEntity.ok(new TokenDto(token, "Bearer")));
 		
 		//seting header to put on post and delete request parameters
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -94,7 +80,6 @@ public class RoomPostAndDeleteTests2 {
 
 	@Test
 	public void test() throws Exception {
-		Mockito.when(roomRepository.save(Mockito.any())).thenReturn(room);
 
 		MvcResult result = mockMvc.perform(post(uri)
 						.headers(headers)
@@ -103,7 +88,7 @@ public class RoomPostAndDeleteTests2 {
 						.andExpect(status().isCreated())
 						.andReturn();
 		
-		assertTrue(result.getResponse().getContentAsString().contains("\"number\":1"));
+		assertTrue(result.getResponse().getContentAsString().contains("\"number\":5"));
 	}
 
 //	@Test

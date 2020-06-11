@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +28,6 @@ import br.com.albergue.domain.CashPayment;
 import br.com.albergue.domain.Customer;
 import br.com.albergue.domain.Reservation;
 import br.com.albergue.repository.CustomerRepository;
-import br.com.albergue.repository.PaymentsRepository;
 import br.com.albergue.repository.ReservationRepository;
 
 @RunWith(SpringRunner.class)
@@ -44,9 +45,6 @@ public class ReservationGetTests {
 
 	@MockBean
 	private ReservationRepository reservationRepository;
-
-	@MockBean
-	private PaymentsRepository paymentsRepository;
 
 	private URI uri;
 	private Reservation reservation = new Reservation();
@@ -77,20 +75,27 @@ public class ReservationGetTests {
 	}
 
 	@Test
-	public void shouldReturnOneReservationWithoutParamAndStatusOk() throws URISyntaxException {
+	public void shouldReturnOneReservationAndStatusOkWithoutParam() throws URISyntaxException, JSONException {
+		
+		Reservation reservation2 = reservation;
+		reservation2.setNumberOfGuests(25);
+		reservationsList.add(reservation2);
 
 		Mockito.when(reservationRepository.findAll()).thenReturn(reservationsList);
 
 		ResponseEntity<String> result = restTemplate.getForEntity(uri, String.class);
 
+		JSONArray jArray = new JSONArray(result.getBody());
+
 		// Verify request succeed
 		Assert.assertEquals(200, result.getStatusCodeValue());
-		Assert.assertTrue(result.getBody().contains("\"amount\":5000"));
+		Assert.assertEquals(jArray.length(), 2);
+		
 
 	}
 
 	@Test
-	public void shouldReturnOneReservationByParamAndStatusOk() throws URISyntaxException {
+	public void shouldReturnOneReservationAndStatusOkByParam() throws URISyntaxException {
 
 		Mockito.when(customerRepository.findByName("Teste")).thenReturn(customersList);
 		Mockito.when(customer.getReservations()).thenReturn(reservationsList.stream().collect(Collectors.toSet()));
@@ -103,7 +108,7 @@ public class ReservationGetTests {
 	}
 
 	@Test
-	public void shouldReturnOneReservationByIdAndStatusOk() throws URISyntaxException {
+	public void shouldReturnOneReservationAndStatusOkById() throws URISyntaxException {
 
 		Mockito.when(reservationRepository.findById(2L)).thenReturn(Optional.of(reservation));
 
@@ -115,7 +120,7 @@ public class ReservationGetTests {
 	}
 
 	@Test
-	public void shouldNotReturnAnyReservationByWrongParamAndStatusNotFound() throws URISyntaxException {
+	public void shouldReturnNotFoundStatusAndNullBodyByWrongParam() throws URISyntaxException {
 
 		Mockito.when(customerRepository.findByName("Teste")).thenReturn(customersList);
 		Mockito.when(customer.getReservations()).thenReturn(reservationsList.stream().collect(Collectors.toSet()));

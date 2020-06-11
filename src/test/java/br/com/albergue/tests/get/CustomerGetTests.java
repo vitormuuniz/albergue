@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.json.JSONArray;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,19 +74,26 @@ public class CustomerGetTests {
 	}
 
 	@Test
-	public void shouldReturnOneCustomerWithoutParamAndStatusOk() throws URISyntaxException {
+	public void shouldReturnOneCustomerAndStatusOkWithoutParam() throws URISyntaxException {
+		
+		Customer customer2 = new Customer();
+		customer2.setName("Antonio");
+		customersList.add(customer2);
 		
 		Mockito.when(customerRepository.findAll()).thenReturn(customersList);
 
 		ResponseEntity<String> result = restTemplate.getForEntity(uri, String.class);
 
+		JSONArray jArray = new JSONArray(result.getBody());
+
+		System.out.println(jArray);
 		// Verify request succeed
 		Assert.assertEquals(200, result.getStatusCodeValue());
-		Assert.assertTrue(result.getBody().contains("\"name\":\"Washington\""));
+		Assert.assertEquals(jArray.length(), 2);
 	}
 	
 	@Test
-	public void shouldReturnOneCustomerByParamAndStatusOk() throws URISyntaxException {
+	public void shouldReturnOneCustomerAndStatusOkByParam() throws URISyntaxException {
 		
 		Mockito.when(customerRepository.findByName("Washington")).thenReturn(customersList);
 
@@ -97,7 +105,7 @@ public class CustomerGetTests {
 	}
 	
 	@Test
-	public void shouldReturnOneCustomerByIdAndStatusOk() throws URISyntaxException {
+	public void shouldReturnOneCustomerAndStatusOkById() throws URISyntaxException {
 		
 		Mockito.when(customerRepository.findById(2L)).thenReturn(Optional.of(customer));
 
@@ -109,7 +117,7 @@ public class CustomerGetTests {
 	}
 	
 	@Test
-	public void shouldNotReturnAnyCustomerByWrongParamAndStatusNotFound() throws URISyntaxException {
+	public void shouldReturnNotFoundStatusAndNullBodyByWrongParam() throws URISyntaxException {
 		
 		Mockito.when(customerRepository.findByName("Washington")).thenReturn(customersList);
 

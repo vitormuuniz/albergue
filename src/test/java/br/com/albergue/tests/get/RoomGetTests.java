@@ -21,6 +21,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import br.com.albergue.domain.Room;
 import br.com.albergue.repository.RoomRepository;
+import org.json.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -51,20 +52,23 @@ public class RoomGetTests {
 	}
 	
 	@Test
-	public void shouldReturnOneRomWithoutParamAndStatusOk() throws URISyntaxException {
-
+	public void shouldReturnAllRoomsAndStatusOkWithoutParam() throws JSONException {
+		Room room2 = new Room(14, 250.0);
+		roomList.add(room2);
 		Mockito.when(roomRepository.findAll()).thenReturn(roomList);
 
 		ResponseEntity<String> result = restTemplate.getForEntity(uri, String.class);
+		
+		JSONArray jArray = new JSONArray(result.getBody());
 
 		// Verify request succeed
 		Assert.assertEquals(200, result.getStatusCodeValue());
-		Assert.assertTrue(result.getBody().contains("\"number\":13"));
+		Assert.assertEquals(jArray.length(), 2);
 
 	}
 	
 	@Test
-	public void shouldReturnOneRoomByParamAndStatusOk() throws URISyntaxException {
+	public void shouldReturnOneRoomAndStatusOkByParam() throws URISyntaxException {
 		
 		Mockito.when(roomRepository.findByNumber(13)).thenReturn(roomList);
 
@@ -76,7 +80,7 @@ public class RoomGetTests {
 	}
 	
 	@Test
-	public void shouldReturnOneRoomByIdAndStatusOk() throws URISyntaxException {
+	public void shouldReturnOneRoomAndStatusOkById() throws URISyntaxException {
 		
 		Mockito.when(roomRepository.findById(1L)).thenReturn(Optional.of(room));
 
@@ -88,7 +92,7 @@ public class RoomGetTests {
 	}
 	
 	@Test
-	public void shouldNotReturnAnyRoomByWrongParamAndStatusNotFound() throws URISyntaxException {
+	public void shouldReturnNotFoundStatusAndNullBodyByWrongParam() throws URISyntaxException {
 		
 		Mockito.when(roomRepository.findByNumber(13)).thenReturn(roomList);
 
