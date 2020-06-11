@@ -1,52 +1,65 @@
 package br.com.albergue.tests.post;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
-import java.util.Optional;
+import java.util.Date;
 
 import org.junit.Before;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
-import br.com.albergue.controller.dto.CustomerDto;
-import br.com.albergue.controller.dto.TokenDto;
-import br.com.albergue.controller.form.LoginForm;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import br.com.albergue.domain.Address;
 import br.com.albergue.domain.Customer;
+import br.com.albergue.repository.AddressRepository;
 import br.com.albergue.repository.CustomerRepository;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@FixMethodOrder(MethodSorters.JVM) //rodar os testes na ordem de escrita
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@AutoConfigureMockMvc
+@TestPropertySource(locations = "classpath:test.properties")
 public class CustomerPostAndDeleteTests {
 
 	@Autowired
-	private TestRestTemplate restTemplate;
-	
-	@Autowired
-	CustomerRepository customerRepository;
+	CustomerRepository customerRespository;
 
-	@LocalServerPort
-	private int port;
+	@Autowired
+	AddressRepository addressRepository;
+
+	@Autowired
+	private MockMvc mockMvc;
+
+	@Autowired
+	ObjectMapper objectMapper;
+
+	@Value("${forum.jwt.expiration}") // @value serve para pegar a propriedade do application.properties
+	private String expiration;
+
+	@Value("${forum.jwt.secret}")
+	private String secret;
 
 	private URI uri;
-	private ResponseEntity<TokenDto> auth;
-	private HttpHeaders headers;
+	private HttpHeaders headers = new HttpHeaders();
+	private String token;
 	private Address address = new Address();
 	private Customer customer = new Customer();
 
@@ -54,16 +67,20 @@ public class CustomerPostAndDeleteTests {
 	public void init() throws URISyntaxException {
 		uri = new URI("/api/customers");
 
-		// login
-		LoginForm login = new LoginForm();
-		login.setEmail("aluno@email.com");
-		login.setPassword("123456");
-		auth = restTemplate.postForEntity("/auth", login, TokenDto.class);
+		// generating token to autentication
+		Date hoje = new Date();
+		Date dataExpiracao = new Date(hoje.getTime() + Long.parseLong(expiration));
+		token = Jwts.builder().setIssuer("API do Albergue") // quem fez a geração do token
+				.setSubject(Long.toString(1L)) // usuario a quem esse token pertence
+				.setIssuedAt(hoje) // data de geração
+				.setExpiration(dataExpiracao) // data de expiração
+				.signWith(SignatureAlgorithm.HS256, secret) // usar a senha do application.properties / algoritmo de
+															// criptografia
+				.compact();
 
-		// getting authorization
-		headers = new HttpHeaders();
+		// seting header to put on post and delete request parameters
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.set("Authorization", "Bearer " + auth.getBody().getToken());
+		headers.set("Authorization", "Bearer " + token);
 
 		// setting address to put into the customer paramseters
 		address.setAddressName("rua tal");
@@ -72,37 +89,41 @@ public class CustomerPostAndDeleteTests {
 		address.setState("XXX");
 		address.setZipCode("xxxx-xxx");
 
-		//setting customer
-		customer.setLastName("aaaaaaaaaa");
+		// setting customer
 		customer.setAddress(address);
 		customer.setBirthday(LocalDate.of(1900, 12, 12));
 		customer.setEmail("washington@orkut.com");
 		customer.setName("Washington");
+		customer.setLastName("Ferrolho");
 		customer.setTitle("MRS.");
 		customer.setPassword("1234567");
 	}
 
 	@Test
-	public void testRegisterCustomerMethod() {
+	public void shouldAutenticateAndDeleteOneCustomerWithId2() throws Exception {
+		addressRepository.save(address);
+		customerRespository.save(customer);
 
-		HttpEntity<?> entity = new HttpEntity<Object>(customer, headers);
-		ResponseEntity<CustomerDto> result = restTemplate.exchange(uri, HttpMethod.POST, entity, CustomerDto.class);
-//
-		// Verify request succeed
-		assertEquals(201, result.getStatusCodeValue());
-		assertEquals("Washington", result.getBody().getName());
+		mockMvc
+			.perform(delete("/api/customers/2")
+			.headers(headers))
+			.andExpect(status().isOk())
+			.andReturn();	
 	}
 	
 	@Test
-	public void testDeleteCustomerMethod() {
-		
-		HttpEntity<?> entity = new HttpEntity<Object>(null, headers);
-		ResponseEntity<String> result = restTemplate.exchange(uri+"/1", HttpMethod.DELETE, entity, String.class);
-		
-		Optional<Customer> findById = customerRepository.findById(1L);
-		
-		assertEquals(findById.isPresent(), false);
-		assertEquals(200, result.getStatusCodeValue());
+	public void shouldAutenticateAndCreateOneCustomerAndReturnStatusCreated() throws Exception {
 
+		MvcResult result = 
+				mockMvc
+					.perform(post(uri)
+					.headers(headers)
+					.content(objectMapper.writeValueAsString(customer)))
+					.andDo(print())
+					.andExpect(status().isCreated())
+					.andReturn();
+
+		assertTrue(result.getResponse().getContentAsString().contains("\"name\":\"Washington\""));
 	}
+
 }

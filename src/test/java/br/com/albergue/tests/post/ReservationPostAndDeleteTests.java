@@ -21,6 +21,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import br.com.albergue.controller.dto.ReservationDto;
@@ -34,6 +35,7 @@ import br.com.albergue.repository.ReservationRepository;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
+@TestPropertySource(locations="classpath:test.properties")
 public class ReservationPostAndDeleteTests {
 
 	@Autowired
