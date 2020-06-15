@@ -1,7 +1,6 @@
 package br.com.albergue.controller.form;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 import javax.validation.constraints.NotNull;
 

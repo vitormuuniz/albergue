@@ -1,6 +1,6 @@
 package br.com.albergue.tests.post;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -27,9 +27,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import br.com.albergue.controller.dto.ReservationDto;
 import br.com.albergue.controller.dto.TokenDto;
 import br.com.albergue.controller.form.LoginForm;
-import br.com.albergue.domain.Customer;
 import br.com.albergue.domain.Reservation;
-import br.com.albergue.repository.CustomerRepository;
 import br.com.albergue.repository.ReservationRepository;
 
 @RunWith(SpringRunner.class)

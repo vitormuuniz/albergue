@@ -1,6 +1,6 @@
 package br.com.albergue.tests.get;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
