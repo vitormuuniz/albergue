@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.albergue.controller.dto.RoomDto;
 import br.com.albergue.domain.Room;
 import br.com.albergue.repository.RoomRepository;
 import io.jsonwebtoken.Jwts;
@@ -98,6 +99,11 @@ public class RoomPostAndDeleteTests {
 						.andExpect(status().isCreated())
 						.andReturn();
 		
-		assertTrue(result.getResponse().getContentAsString().contains("\"number\":5"));
+		String contentAsString = result.getResponse().getContentAsString();
+
+		RoomDto customerObjResponse = objectMapper.readValue(contentAsString, RoomDto.class);
+
+		assertEquals(customerObjResponse.getNumber(), 5);
+		assertEquals(customerObjResponse.getDimension(), 230, 0);
 	}
 }

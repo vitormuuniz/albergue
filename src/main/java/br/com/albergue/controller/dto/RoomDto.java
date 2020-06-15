@@ -3,13 +3,11 @@ package br.com.albergue.controller.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-
-import br.com.albergue.domain.Reservation;
 import br.com.albergue.domain.Room;
 
 public class RoomDto {
 
+	private Long id;
 	int number;
 	double dimension;
 	
@@ -19,6 +17,15 @@ public class RoomDto {
 	public RoomDto(Room room) {
 		this.number = room.getNumber();
 		this.dimension = room.getDimension();
+	}
+	
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public int getNumber() {
@@ -53,5 +60,4 @@ public class RoomDto {
 		}
 		return roomsDtoList;
 	}
-	
 }

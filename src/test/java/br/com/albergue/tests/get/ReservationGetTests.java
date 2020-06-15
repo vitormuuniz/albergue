@@ -1,5 +1,7 @@
 package br.com.albergue.tests.get;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
@@ -9,9 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +24,11 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import br.com.albergue.controller.dto.ReservationDto;
 import br.com.albergue.domain.CashPayment;
 import br.com.albergue.domain.Customer;
 import br.com.albergue.domain.Reservation;
@@ -45,6 +50,9 @@ public class ReservationGetTests {
 
 	@MockBean
 	private ReservationRepository reservationRepository;
+	
+	@Autowired
+	ObjectMapper objectMapper;
 
 	private URI uri;
 	private Reservation reservation = new Reservation();
@@ -75,7 +83,7 @@ public class ReservationGetTests {
 	}
 
 	@Test
-	public void shouldReturnOneReservationAndStatusOkWithoutParam() throws URISyntaxException, JSONException {
+	public void shouldReturnOneReservationAndStatusOkWithoutParam() throws URISyntaxException, JSONException, JsonMappingException, JsonProcessingException {
 		
 		Reservation reservation2 = reservation;
 		reservation2.setNumberOfGuests(25);
@@ -85,38 +93,49 @@ public class ReservationGetTests {
 
 		ResponseEntity<String> result = restTemplate.getForEntity(uri, String.class);
 
-		JSONArray jArray = new JSONArray(result.getBody());
+		String contentAsString = result.getBody();
 
-		// Verify request succeed
-		Assert.assertEquals(200, result.getStatusCodeValue());
-		Assert.assertEquals(jArray.length(), 2);
+		ReservationDto[] customerObjResponse = objectMapper.readValue(contentAsString, ReservationDto[].class);
+
+		/// Verify request succeed
+		assertEquals(200, result.getStatusCodeValue());
+		assertEquals(customerObjResponse[0].getPayments().getAmount(), 5000, 0);
+		assertEquals(customerObjResponse.length, 2);
 		
 
 	}
 
 	@Test
-	public void shouldReturnOneReservationAndStatusOkByParam() throws URISyntaxException {
+	public void shouldReturnOneReservationAndStatusOkByParam() throws URISyntaxException, JsonMappingException, JsonProcessingException {
 
 		Mockito.when(customerRepository.findByName("Teste")).thenReturn(customersList);
 		Mockito.when(customer.getReservations()).thenReturn(reservationsList.stream().collect(Collectors.toSet()));
 		
 		ResponseEntity<String> result = restTemplate.getForEntity(uri + "?name=Teste", String.class);
 
-		// Verify request succeed
-		Assert.assertEquals(200, result.getStatusCodeValue());
-		Assert.assertTrue(result.getBody().contains("\"amount\":5000"));
+		String contentAsString = result.getBody();
+
+		ReservationDto[] customerObjResponse = objectMapper.readValue(contentAsString, ReservationDto[].class);
+		
+		/// Verify request succeed
+		assertEquals(200, result.getStatusCodeValue());
+		assertEquals(customerObjResponse[0].getPayments().getAmount(), 5000, 0);
 	}
 
 	@Test
-	public void shouldReturnOneReservationAndStatusOkById() throws URISyntaxException {
+	public void shouldReturnOneReservationAndStatusOkById() throws URISyntaxException, JsonMappingException, JsonProcessingException {
 
 		Mockito.when(reservationRepository.findById(2L)).thenReturn(Optional.of(reservation));
 
 		ResponseEntity<String> result = restTemplate.getForEntity(uri + "/2", String.class);
+		
+		String contentAsString = result.getBody();
+
+		ReservationDto customerObjResponse = objectMapper.readValue(contentAsString, ReservationDto.class);
 
 		/// Verify request succeed
-		Assert.assertEquals(200, result.getStatusCodeValue());
-		Assert.assertTrue(result.getBody().contains("\"amount\":5000"));
+		assertEquals(200, result.getStatusCodeValue());
+		assertEquals(customerObjResponse.getPayments().getAmount(), 5000, 0);
 	}
 
 	@Test
@@ -128,7 +147,7 @@ public class ReservationGetTests {
 		ResponseEntity<String> result = restTemplate.getForEntity(uri + "?name=Teste333", String.class);
 
 		// Verify request succeed
-		Assert.assertEquals(404, result.getStatusCodeValue());
-		Assert.assertEquals(result.getBody(), null);
+		assertEquals(404, result.getStatusCodeValue());
+		assertEquals(result.getBody(), null);
 	}
 }

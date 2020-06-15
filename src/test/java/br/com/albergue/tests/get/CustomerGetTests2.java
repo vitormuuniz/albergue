@@ -25,6 +25,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import br.com.albergue.controller.dto.CustomerDto;
 import br.com.albergue.domain.Address;
 import br.com.albergue.domain.Customer;
 import br.com.albergue.repository.AddressRepository;
@@ -43,10 +46,14 @@ public class CustomerGetTests2 {
 
 	@MockBean
 	AddressRepository addressRepository;
+	
+	@Autowired
+	ObjectMapper objectMapper;
 
 	private URI uri;
 	private Address address = new Address();
 	private Customer customer = new Customer();
+	private List<Customer> customersList = new ArrayList<>();
 
 	@Before
 	public void init() throws URISyntaxException {
@@ -55,11 +62,11 @@ public class CustomerGetTests2 {
 
 		// setting address to put into the customer paramseters
 		address.setId(1L);
-		address.setAddressName("rua tal");
-		address.setCity("alguma");
-		address.setCountry("algum");
-		address.setState("XXX");
-		address.setZipCode("xxxx-xxx");
+		address.setAddressName("rua x");
+		address.setCity("Amparo");
+		address.setCountry("Brasil");
+		address.setState("SP");
+		address.setZipCode("13900-000");
 
 		// setting customer
 		customer.setId(1L);
@@ -70,13 +77,17 @@ public class CustomerGetTests2 {
 		customer.setName("Washington");
 		customer.setTitle("MRS.");
 		customer.setPassword("1234567");
+		
+		customersList.add(customer);
 	}
 
 	@Test
 	public void shouldReturnOneCustomerWithoutParamAndStatusOk() throws Exception {
-		List<Customer> cust = new ArrayList<>();
-		cust.add(customer);
-		when(customerRepository.findAll()).thenReturn(cust);
+		Customer customer2 = new Customer();
+		customer2.setName("Antonio");
+		customersList.add(customer2);
+		
+		when(customerRepository.findAll()).thenReturn(customersList);
 
 		MvcResult result = 
 				mockMvc.perform(get(uri))
@@ -84,26 +95,35 @@ public class CustomerGetTests2 {
 				.andExpect(status().isOk())
 				.andReturn();
 
-		String content = result.getResponse().getContentAsString();
-		assertTrue(content.contains("\"name\":\"Washington\""));
+		String contentAsString = result.getResponse().getContentAsString();
+
+		CustomerDto[] customerObjResponse = objectMapper.readValue(contentAsString, CustomerDto[].class);
+		
+		/// Verify request succeed
+		assertEquals(customerObjResponse.length, 2);
+		assertEquals(customerObjResponse[0].getName(), "Washington");
+		assertEquals(customerObjResponse[0].getAddress().getCity(), "Amparo");
 
 	}
 
 	@Test
 	public void shouldReturnOneCustomerByParamAndStatusOk() throws Exception {
 
-		List<Customer> cust = new ArrayList<>();
-		cust.add(customer);
-
-		when(customerRepository.findByName(eq(customer.getName()))).thenReturn(cust);
+		when(customerRepository.findByName(eq(customer.getName()))).thenReturn(customersList);
+		
 		MvcResult result = 
 				mockMvc.perform(get(uri + "?name=Washington"))
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andReturn();
 
-		String content = result.getResponse().getContentAsString();
-		assertTrue(content.contains("\"name\":\"Washington\""));
+		String contentAsString = result.getResponse().getContentAsString();
+
+		CustomerDto[] customerObjResponse = objectMapper.readValue(contentAsString, CustomerDto[].class);
+		
+		/// Verify request succeed
+		assertEquals(customerObjResponse[0].getName(), "Washington");
+		assertEquals(customerObjResponse[0].getAddress().getCity(), "Amparo");
 	}
 
 	@Test
@@ -118,18 +138,20 @@ public class CustomerGetTests2 {
 				.andExpect(status().isOk())
 				.andReturn();
 
-		String content = result.getResponse().getContentAsString();
-		assertTrue(content.contains("\"name\":\"Washington\""));
+		String contentAsString = result.getResponse().getContentAsString();
+
+		CustomerDto customerObjResponse = objectMapper.readValue(contentAsString, CustomerDto.class);
+		
+		/// Verify request succeed
+		assertEquals(customerObjResponse.getName(), "Washington");
+		assertEquals(customerObjResponse.getAddress().getCity(), "Amparo");
 
 	}
 
 	@Test
 	public void shouldNotReturnAnyCustomerByWrongParamAndStatusNotFound() throws Exception {
 
-		List<Customer> cust = new ArrayList<>();
-		cust.add(customer);
-
-		when(customerRepository.findByName(eq(customer.getName()))).thenReturn(cust);
+		when(customerRepository.findByName(eq(customer.getName()))).thenReturn(customersList);
 		mockMvc.perform(get(uri + "?name=Washington222"))
 				.andDo(print())
 				.andExpect(status().isNotFound())
