@@ -34,24 +34,6 @@ public abstract class Payments {
 	@NotNull
 	protected LocalDateTime dateTime;
 	
-	public static Payments createPayment(String type) {
-		Payments payment = null;
-		switch (type) {
-			case "Cash" :
-				payment = new CashPayment();
-				break;
-			case "Credit Card" :
-				payment = new CreditCardPayment();
-				break;
-			case "Check" :
-				payment = new CheckPayment();
-				break;
-			default:
-				payment = new CashPayment();
-		}
-	    return payment;
-	}
-	
 	public Long getId() {
 	    return id;
 	}

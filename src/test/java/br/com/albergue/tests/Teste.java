@@ -1,17 +1,20 @@
 package br.com.albergue.tests;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.LocalDate;
+import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
@@ -21,16 +24,15 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.albergue.controller.dto.CustomerDto;
-import br.com.albergue.controller.dto.TokenDto;
-import br.com.albergue.controller.form.LoginForm;
 import br.com.albergue.domain.Address;
 import br.com.albergue.domain.Customer;
 import br.com.albergue.repository.AddressRepository;
 import br.com.albergue.repository.CustomerRepository;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
@@ -50,21 +52,38 @@ public class Teste {
 	@Autowired
 	ObjectMapper objectMapper;
 
+	@Value("${forum.jwt.expiration}") // @value serve para pegar a propriedade do application.properties
+	private String expiration;
+
+	@Value("${forum.jwt.secret}")
+	private String secret;
+
 	private URI uri;
 	private HttpHeaders headers = new HttpHeaders();
+	private String token;
 	private Address address = new Address();
 	private Customer customer = new Customer();
-	private LoginForm login = new LoginForm();
- 
-	@Before
-	public void init() throws JsonProcessingException, Exception {
-		uri = new URI("/api/customers");
-		
-		//setting login variables to autenticate
-		login.setEmail("aluno@email.com");
-		login.setPassword("123456");
 
-		// setting address to put into the customer parameters
+	@Before
+	public void init() throws URISyntaxException {
+		uri = new URI("/api/customers");
+
+		// generating token to autentication
+		Date hoje = new Date();
+		Date dataExpiracao = new Date(hoje.getTime() + Long.parseLong(expiration));
+		token = Jwts.builder().setIssuer("API do Albergue") // quem fez a geração do token
+				.setSubject(Long.toString(1L)) // usuario a quem esse token pertence
+				.setIssuedAt(hoje) // data de geração
+				.setExpiration(dataExpiracao) // data de expiração
+				.signWith(SignatureAlgorithm.HS256, secret) // usar a senha do application.properties / algoritmo de
+															// criptografia
+				.compact();
+
+		// seting header to put on post and delete request parameters
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.set("Authorization", "Bearer " + token);
+
+		// setting address to put into the customer paramseters
 		address.setAddressName("rua x");
 		address.setCity("Amparo");
 		address.setCountry("Brasil");
@@ -79,20 +98,6 @@ public class Teste {
 		customer.setLastName("Ferrolho");
 		customer.setTitle("MRS.");
 		customer.setPassword("1234567");
-		
-		//posting on /auth to get token
-		MvcResult result = mockMvc
-				.perform(post("/auth")
-				.content(objectMapper.writeValueAsString(login)).contentType("application/json"))
-				.andReturn();	
-			
-		String contentAsString = result.getResponse().getContentAsString();
-
-		TokenDto response = objectMapper.readValue(contentAsString, TokenDto.class);
-		
-		// seting header to put on post and delete request parameters
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.set("Authorization", "Bearer " + response.getToken());
 	}
 
 	@Test
@@ -101,9 +106,8 @@ public class Teste {
 		customerRespository.save(customer);
 
 		mockMvc
-			.perform(delete(uri+"/2")
+			.perform(delete("/api/customers/2")
 			.headers(headers))
-			.andDo(print())
 			.andExpect(status().isOk())
 			.andReturn();	
 	}
@@ -115,12 +119,11 @@ public class Teste {
 				mockMvc
 					.perform(post(uri)
 					.headers(headers)
-					.content(objectMapper.writeValueAsString(customer))
-					.contentType("application/json"))
+					.content(objectMapper.writeValueAsString(customer)))
 					.andDo(print())
 					.andExpect(status().isCreated())
 					.andReturn();
-		
+
 		String contentAsString = result.getResponse().getContentAsString();
 
 		CustomerDto customerObjResponse = objectMapper.readValue(contentAsString, CustomerDto.class);
@@ -128,4 +131,5 @@ public class Teste {
 		assertEquals(customerObjResponse.getName(), "Washington");
 		assertEquals(customerObjResponse.getAddress().getCity(), "Amparo");
 	}
+
 }

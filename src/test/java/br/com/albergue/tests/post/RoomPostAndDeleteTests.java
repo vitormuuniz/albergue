@@ -6,14 +6,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
@@ -23,13 +20,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.albergue.controller.dto.RoomDto;
+import br.com.albergue.controller.dto.TokenDto;
+import br.com.albergue.controller.form.LoginForm;
 import br.com.albergue.domain.Room;
 import br.com.albergue.repository.RoomRepository;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
@@ -46,36 +44,32 @@ public class RoomPostAndDeleteTests {
 	@Autowired
 	ObjectMapper objectMapper;
 
-	@Value("${forum.jwt.expiration}") // @value serve para pegar a propriedade do application.properties
-	private String expiration;
-
-	@Value("${forum.jwt.secret}")
-	private String secret;
-
 	private URI uri;
 	private HttpHeaders headers = new HttpHeaders();
-	private String token;
 	private Room room = new Room(5, 230.0);
+	private LoginForm login = new LoginForm();
 
 	@Before
-	public void init() throws URISyntaxException {
+	public void init() throws JsonProcessingException, Exception {
 		uri = new URI("/api/rooms");
 
-		//generating token to autentication
-		Date hoje = new Date();
-		Date dataExpiracao = new Date(hoje.getTime() + Long.parseLong(expiration));
-		token = Jwts.builder()
-				.setIssuer("API do Albergue") // quem fez a geração do token
-				.setSubject(Long.toString(1L)) // usuario a quem esse token pertence
-				.setIssuedAt(hoje) // data de geração
-				.setExpiration(dataExpiracao) // data de expiração
-				.signWith(SignatureAlgorithm.HS256, secret) // usar a senha do application.properties / algoritmo de
-															// criptografia
-				.compact();
+		//setting login variables to autenticate
+		login.setEmail("aluno@email.com");
+		login.setPassword("123456");
+
+		//posting on /auth to get token
+		MvcResult resultAuth = mockMvc
+				.perform(post("/auth")
+				.content(objectMapper.writeValueAsString(login)).contentType("application/json"))
+				.andReturn();	
+			
+		String contentAsString = resultAuth.getResponse().getContentAsString();
+
+		TokenDto loginObjResponse = objectMapper.readValue(contentAsString, TokenDto.class);
 		
-		//seting header to put on post and delete request parameters
+		// seting header to put on post and delete request parameters
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.set("Authorization", "Bearer " + token);
+		headers.set("Authorization", "Bearer " + loginObjResponse.getToken());
 	}
 
 
@@ -85,6 +79,7 @@ public class RoomPostAndDeleteTests {
 		
 		mockMvc.perform(delete("/api/rooms/1")
 			.headers(headers))
+			.andDo(print())
             .andExpect(status().isOk())
             .andReturn();
 	}

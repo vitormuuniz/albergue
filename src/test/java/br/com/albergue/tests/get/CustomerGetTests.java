@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -101,7 +100,7 @@ public class CustomerGetTests {
 		assertEquals(customerObjResponse.length, 2);
 		assertEquals(customerObjResponse[0].getName(), "Washington");
 		assertEquals(customerObjResponse[0].getAddress().getCity(), "Amparo");
-		Assert.assertEquals(200, result.getStatusCodeValue());
+		assertEquals(200, result.getStatusCodeValue());
 	}
 	
 	@Test
@@ -118,7 +117,7 @@ public class CustomerGetTests {
 		/// Verify request succeed
 		assertEquals(customerObjResponse[0].getName(), "Washington");
 		assertEquals(customerObjResponse[0].getAddress().getCity(), "Amparo");
-		Assert.assertEquals(200, result.getStatusCodeValue());
+		assertEquals(200, result.getStatusCodeValue());
 	}
 	
 	@Test
@@ -135,7 +134,7 @@ public class CustomerGetTests {
 		/// Verify request succeed
 		assertEquals(customerObjResponse.getName(), "Washington");
 		assertEquals(customerObjResponse.getAddress().getCity(), "Amparo");
-		Assert.assertEquals(200, result.getStatusCodeValue());
+		assertEquals(200, result.getStatusCodeValue());
 	}
 	
 	@Test
@@ -146,8 +145,8 @@ public class CustomerGetTests {
 		ResponseEntity<String> result = restTemplate.getForEntity(uri + "?name=Washington222", String.class);
 
 		// Verify request succeed
-		Assert.assertEquals(404, result.getStatusCodeValue());
-		Assert.assertEquals(result.getBody(), null);
+		assertEquals(404, result.getStatusCodeValue());
+		assertEquals(result.getBody(), null);
 	}
 
 }
