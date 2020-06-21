@@ -136,15 +136,18 @@ public class ReservationPostAndDeleteTests {
 		String contentAsString = result.getResponse().getContentAsString();
 
 		ReservationDto reservationObjResponse = objectMapper.readValue(contentAsString, ReservationDto.class);
+		
+		CheckPayment checkObjResponse = (CheckPayment) reservationObjResponse.getPayments();
 
 		assertEquals(reservationObjResponse.getCheckinDate(), LocalDate.of(2019, 04, 01));
 		assertEquals(reservationObjResponse.getPayments().getAmount(), 3000);
+		assertEquals(checkObjResponse.getBankName(), "Banco do Brasil");
 	}
 	
 	@Test
 	public void shouldAutenticateAndCreateOneReservationByCashPaymentAndReturnStatusCreated() throws Exception {
 		cashPayment.setAmount(4000);
-		cashPayment.setAmountTendered(5000);
+		cashPayment.setAmountTendered(10000);
 		cashPayment.setDate(LocalDateTime.of(LocalDate.of(2020,01,25), LocalTime.of(21, 32)));
 		
 		reservationForm.setPayments(cashPayment);
@@ -163,9 +166,12 @@ public class ReservationPostAndDeleteTests {
 		String contentAsString = result.getResponse().getContentAsString();
 
 		ReservationDto reservationObjResponse = objectMapper.readValue(contentAsString, ReservationDto.class);
+		
+		CashPayment cashObjResponse = (CashPayment) reservationObjResponse.getPayments();
 
 		assertEquals(reservationObjResponse.getCheckinDate(), LocalDate.of(2019, 04, 01));
 		assertEquals(reservationObjResponse.getPayments().getAmount(), 4000);
+		assertEquals(cashObjResponse.getAmountTendered(), 10000);
 	}
 	
 	@Test
@@ -173,8 +179,8 @@ public class ReservationPostAndDeleteTests {
 		creditCardPayment.setAmount(5000);
 		creditCardPayment.setDate(LocalDateTime.of(LocalDate.of(2020,01,25), LocalTime.of(21, 33)));
 		creditCardPayment.setIssuer("VISA");
-		creditCardPayment.setNameOnCard("1234 5678 9101 1121");
-		creditCardPayment.setNumber("1234");
+		creditCardPayment.setNameOnCard("WASHINGTON A SILVA");
+		creditCardPayment.setNumber("1234 5678 9101 1121");
 		creditCardPayment.setExpirationDate(LocalDate.of(2020, 05, 01));
 		creditCardPayment.setSecurityCode("123");
 		
@@ -195,7 +201,10 @@ public class ReservationPostAndDeleteTests {
 		
 		ReservationDto reservationObjResponse = objectMapper.readValue(contentAsString, ReservationDto.class);
 		
+		CreditCardPayment creditCardObjResponse = (CreditCardPayment) reservationObjResponse.getPayments();
+		
 		assertEquals(reservationObjResponse.getCheckinDate(), LocalDate.of(2019, 04, 01));
 		assertEquals(reservationObjResponse.getPayments().getAmount(), 5000);
+		assertEquals(creditCardObjResponse.getNameOnCard(), "WASHINGTON A SILVA");
 	}
 }

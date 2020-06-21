@@ -51,7 +51,7 @@ public class RoomPostAndDeleteTests {
 
 	@Before
 	public void init() throws JsonProcessingException, Exception {
-		uri = new URI("/api/rooms");
+		uri = new URI("/api/rooms/");
 
 		//setting login variables to autenticate
 		login.setEmail("aluno@email.com");
@@ -77,7 +77,7 @@ public class RoomPostAndDeleteTests {
 	public void shouldAutenticateAndDeleteOneRoomWithId2() throws Exception {
 		roomRepository.save(room);
 		
-		mockMvc.perform(delete("/api/rooms/1")
+		mockMvc.perform(delete(uri + "1")
 			.headers(headers))
 			.andDo(print())
             .andExpect(status().isOk())

@@ -58,7 +58,7 @@ public class CustomerPostAndDeleteTests {
 
 	@Before
 	public void init() throws JsonProcessingException, Exception {
-		uri = new URI("/api/customers");
+		uri = new URI("/api/customers/");
 		
 		//setting login variables to autenticate
 		login.setEmail("aluno@email.com");
@@ -101,7 +101,7 @@ public class CustomerPostAndDeleteTests {
 		customerRespository.save(customer);
 
 		mockMvc
-			.perform(delete("/api/customers/2")
+			.perform(delete(uri + "2")
 			.headers(headers))
 			.andDo(print())
 			.andExpect(status().isOk())
