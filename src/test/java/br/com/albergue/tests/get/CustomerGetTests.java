@@ -1,6 +1,10 @@
 package br.com.albergue.tests.get;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -12,18 +16,15 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
+import static org.mockito.Mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.albergue.controller.dto.CustomerDto;
@@ -33,25 +34,22 @@ import br.com.albergue.repository.AddressRepository;
 import br.com.albergue.repository.CustomerRepository;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 public class CustomerGetTests {
 
 	@Autowired
-	private TestRestTemplate restTemplate;
-	
+	private MockMvc mockMvc;
+
 	@MockBean
 	CustomerRepository customerRepository;
-	
+
 	@MockBean
 	AddressRepository addressRepository;
 	
-	@LocalServerPort
-	private int port;
-	
 	@Autowired
 	ObjectMapper objectMapper;
-	
+
 	private URI uri;
 	private Address address = new Address();
 	private Customer customer = new Customer();
@@ -59,17 +57,19 @@ public class CustomerGetTests {
 
 	@Before
 	public void init() throws URISyntaxException {
-		
+
 		uri = new URI("/api/customers");
 
 		// setting address to put into the customer paramseters
+		address.setId(1L);
 		address.setAddressName("rua x");
 		address.setCity("Amparo");
 		address.setCountry("Brasil");
 		address.setState("SP");
 		address.setZipCode("13900-000");
 
-		//setting customer
+		// setting customer
+		customer.setId(1L);
 		customer.setLastName("aaaaaaaaaa");
 		customer.setAddress(address);
 		customer.setBirthday(LocalDate.of(1900, 12, 12));
@@ -82,17 +82,20 @@ public class CustomerGetTests {
 	}
 
 	@Test
-	public void shouldReturnOneCustomerAndStatusOkWithoutParam() throws URISyntaxException, JsonMappingException, JsonProcessingException {
-		
+	public void shouldReturnOneCustomerWithoutParamAndStatusOk() throws Exception {
 		Customer customer2 = new Customer();
 		customer2.setName("Antonio");
 		customersList.add(customer2);
 		
-		Mockito.when(customerRepository.findAll()).thenReturn(customersList);
+		when(customerRepository.findAll()).thenReturn(customersList);
 
-		ResponseEntity<String> result = restTemplate.getForEntity(uri, String.class);
+		MvcResult result = 
+				mockMvc.perform(get(uri))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andReturn();
 
-		String contentAsString = result.getBody();
+		String contentAsString = result.getResponse().getContentAsString();
 
 		CustomerDto[] customerObjResponse = objectMapper.readValue(contentAsString, CustomerDto[].class);
 		
@@ -100,53 +103,60 @@ public class CustomerGetTests {
 		assertEquals(customerObjResponse.length, 2);
 		assertEquals(customerObjResponse[0].getName(), "Washington");
 		assertEquals(customerObjResponse[0].getAddress().getCity(), "Amparo");
-		assertEquals(200, result.getStatusCodeValue());
+
 	}
-	
+
 	@Test
-	public void shouldReturnOneCustomerAndStatusOkByParam() throws URISyntaxException, JsonMappingException, JsonProcessingException {
+	public void shouldReturnOneCustomerByParamAndStatusOk() throws Exception {
+
+		when(customerRepository.findByName(eq(customer.getName()))).thenReturn(customersList);
 		
-		Mockito.when(customerRepository.findByName("Washington")).thenReturn(customersList);
+		MvcResult result = 
+				mockMvc.perform(get(uri)
+						.param("name", "Washington"))
+						.andDo(print())
+						.andExpect(status().isOk())
+						.andReturn();
 
-		ResponseEntity<String> result = restTemplate.getForEntity(uri + "?name=Washington", String.class);
-
-		String contentAsString = result.getBody();
+		String contentAsString = result.getResponse().getContentAsString();
 
 		CustomerDto[] customerObjResponse = objectMapper.readValue(contentAsString, CustomerDto[].class);
 		
 		/// Verify request succeed
 		assertEquals(customerObjResponse[0].getName(), "Washington");
 		assertEquals(customerObjResponse[0].getAddress().getCity(), "Amparo");
-		assertEquals(200, result.getStatusCodeValue());
 	}
-	
+
 	@Test
-	public void shouldReturnOneCustomerAndStatusOkById() throws URISyntaxException, JsonMappingException, JsonProcessingException {
-		
-		Mockito.when(customerRepository.findById(2L)).thenReturn(Optional.of(customer));
+	public void shouldReturnOneCustomerByIdAndStatusOk() throws Exception {
 
-		ResponseEntity<String> result = restTemplate.getForEntity(uri + "/2", String.class);
+		Optional<Customer> opcust = Optional.of(customer);
+		when(customerRepository.findById(eq(customer.getId()))).thenReturn(opcust);
 
-		String contentAsString = result.getBody();
+		MvcResult result = 
+				mockMvc.perform(get(uri+"/1"))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andReturn();
+
+		String contentAsString = result.getResponse().getContentAsString();
 
 		CustomerDto customerObjResponse = objectMapper.readValue(contentAsString, CustomerDto.class);
 		
 		/// Verify request succeed
 		assertEquals(customerObjResponse.getName(), "Washington");
 		assertEquals(customerObjResponse.getAddress().getCity(), "Amparo");
-		assertEquals(200, result.getStatusCodeValue());
+
 	}
-	
+
 	@Test
-	public void shouldReturnNotFoundStatusAndNullBodyByWrongParam() throws URISyntaxException {
-		
-		Mockito.when(customerRepository.findByName("Washington")).thenReturn(customersList);
+	public void shouldNotReturnAnyCustomerByWrongParamAndStatusNotFound() throws Exception {
 
-		ResponseEntity<String> result = restTemplate.getForEntity(uri + "?name=Washington222", String.class);
-
-		// Verify request succeed
-		assertEquals(404, result.getStatusCodeValue());
-		assertEquals(result.getBody(), null);
+		when(customerRepository.findByName(eq(customer.getName()))).thenReturn(customersList);
+		mockMvc.perform(get(uri)
+				.param("name", "Washington222"))
+				.andDo(print())
+				.andExpect(status().isNotFound())
+				.andReturn();
 	}
-
 }
