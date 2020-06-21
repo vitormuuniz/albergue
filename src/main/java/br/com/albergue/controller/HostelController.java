@@ -39,38 +39,20 @@ import br.com.albergue.repository.CustomerRepository;
 import br.com.albergue.repository.PaymentsRepository;
 import br.com.albergue.repository.ReservationRepository;
 import br.com.albergue.repository.RoomRepository;
+import br.com.albergue.service.HostelService;
 
 @RestController
 @RequestMapping("/api")
 public class HostelController {
 
 	@Autowired
-	private CustomerRepository customerRepository;
-
-	@Autowired
-	private AddressRepository addressRepository;
-
-	@Autowired
-	private ReservationRepository reservationRepository;
-
-	@Autowired
-	private RoomRepository roomRepository;
-
-	@Autowired
-	private PaymentsRepository paymentsRepository;
+	private HostelService service;
 
 	@PostMapping("/customers") // chegam do cliente para a api
 	public ResponseEntity<CustomerDto> registerCustomer(@RequestBody @Valid CustomerForm form,
 			UriComponentsBuilder uriBuilder) {
-		Customer customer = form.returnCustomer(addressRepository);
-		customerRepository.save(customer);
-
-		// path indica o caminho do recurso sendo chamado (pra nao passar o caminho
-		// completo)
-		// buildAndExpend serve para pegar e substituir o id em {id} dinamicamente
-		// toUri para transformar na uri completa
-		URI uri = uriBuilder.path("/customers/{id}").buildAndExpand(customer.getId()).toUri();
-		return ResponseEntity.created(uri).body(new CustomerDto(customer));
+		
+		return this.service.registerCustomer(form, uriBuilder);
 	}
 
 	// @RequestParam indica que os parametros irão vir pela url e que são
@@ -82,164 +64,79 @@ public class HostelController {
 	public ResponseEntity<List<CustomerDto>> listAllCustomers(@RequestParam(required = false) String name,
 			@PageableDefault(sort = "id", direction = Direction.DESC, page = 0, size = 10) Pageable pagination)
 			throws URISyntaxException {
-
-		List<CustomerDto> response = new ArrayList<>();
 		
-		if (name == null)
-			response = CustomerDto.converter(customerRepository.findAll());
-		else
-			response = CustomerDto.converter(customerRepository.findByName(name));
-
-		if (response.isEmpty() || response == null)
-			return ResponseEntity.notFound().build();
-		else
-			return ResponseEntity.ok(response);
+		return this.service.listAllCustomers(name, pagination);
 	}
 
 	// @PathVariable indica que esse 'id' virá através da url com /topicos/id
 	// inves de ser passado com '?id='
 	@GetMapping("/customers/{id}")
 	public ResponseEntity<CustomerDto> listOneCustomer(@PathVariable Long id) {
-		Optional<Customer> customer = customerRepository.findById(id);
-		if (customer.isPresent())
-			return ResponseEntity.ok(new CustomerDto(customer.get()));
-		else
-			return ResponseEntity.notFound().build();
+		
+		return this.service.listOneCustomer(id);
 	}
 
 	@DeleteMapping("/customers/{id}")
 	@Transactional
 	public ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
-		Optional<Customer> customer = customerRepository.findById(id);
-		if (customer.isPresent()) {
-			customerRepository.deleteById(id);
-			return ResponseEntity.ok().build();
-		} else
-			return ResponseEntity.notFound().build();
+		
+		return this.service.deleteCustomer(id);
 	}
 
 	@PostMapping("/reservations") // chegam do cliente para a api
 	public ResponseEntity<ReservationDto> registerReservation(@RequestBody @Valid ReservationForm form,
 			UriComponentsBuilder uriBuilder) {
-
-		Optional<Customer> customerOp = form.returnCustomer(customerRepository);
-
-		if (customerOp.isPresent()) {
-			Reservation reservation = form.returnReservation(paymentsRepository);
-			reservationRepository.save(reservation);
-
-			Customer customer = customerOp.get();
-			customer.addReservation(reservation);
-			customerRepository.save(customer);
-
-			// path indica o caminho do recurso sendo chamado (pra nao passar o caminho
-			// completo)
-			// buildAndExpend serve para pegar e substituir o id em {id} dinamicamente
-			// toUri para transformar na uri completa
-			URI uri = uriBuilder.path("/reservations/{id}").buildAndExpand(customer.getId()).toUri();
-			return ResponseEntity.created(uri).body(new ReservationDto(reservation));
-		} else
-			return ResponseEntity.notFound().build();
+		
+		return this.service.registerReservation(form, uriBuilder);
 	}
 
 	@GetMapping("/reservations") // dto = saem da api e é retornado para o cliente
 	public ResponseEntity<List<ReservationDto>> listAllReservations(@RequestParam(required = false) String name,
 			@PageableDefault(sort = "id", direction = Direction.DESC, page = 0, size = 10) Pageable pagination) {
-
-		List<ReservationDto> response = new ArrayList<>();
-
-		if (name == null)
-			response = ReservationDto.converter(reservationRepository.findAll());
-		else {
-			List<Customer> customerList = customerRepository.findByName(name);
-			if (!customerList.isEmpty()) {
-				List<Reservation> reservations = customerList.get(0).getReservations().stream()
-						.collect(Collectors.toList());
-
-				response = ReservationDto.converter(reservations);
-			}
-		}
-
-		if (response.isEmpty())
-			return ResponseEntity.notFound().build();
-		else
-			return ResponseEntity.ok(response);
+		
+		return this.service.listAllReservations(name, pagination);
 	}
 
 	// @PathVariable indica que esse 'id' virá através da url com /topicos/id
 	// inves de ser passado com '?id='
 	@GetMapping("/reservations/{id}")
 	public ResponseEntity<ReservationDto> listOneReservation(@PathVariable Long id) {
-		Optional<Reservation> reservation = reservationRepository.findById(id);
-
-		if (reservation.isPresent())
-			return ResponseEntity.ok(new ReservationDto(reservation.get()));
-		else
-			return ResponseEntity.notFound().build();
+		
+		return this.service.listOneReservation(id);
 	}
 
 	@DeleteMapping("/reservations/{id}")
 	@Transactional
 	public ResponseEntity<?> deleteReservation(@PathVariable Long id) {
-		Optional<Reservation> reservation = reservationRepository.findById(id);
-
-		if (reservation.isPresent()) {
-			reservationRepository.deleteById(id);
-
-			return ResponseEntity.ok().build();
-		} else
-			return ResponseEntity.notFound().build();
+		
+		return this.service.deleteReservation(id);
 	}
 
 	@PostMapping("/rooms") // chegam do cliente para a api
 	public ResponseEntity<RoomDto> registerRoom(@RequestBody @Valid RoomForm form, UriComponentsBuilder uriBuilder) {
-		Room room = form.returnRoom();
-		roomRepository.save(room);
-
-		// path indica o caminho do recurso sendo chamado (pra nao passar o caminho
-		// completo)
-		// buildAndExpend serve para pegar e substituir o id em {id} dinamicamente
-		// toUri para transformar na uri completa
-		URI uri = uriBuilder.path("/rooms/{id}").buildAndExpand(room.getId()).toUri();
-		return ResponseEntity.created(uri).body(new RoomDto(room));
+		
+		return this.service.registerRoom(form, uriBuilder);
 	}
 
 	@GetMapping("/rooms") // dto = saem da api e é retornado para o cliente
 	public ResponseEntity<List<RoomDto>> listAllRooms(@RequestParam(required = false) Integer number,
 			@PageableDefault(sort = "id", direction = Direction.DESC, page = 0, size = 10) Pageable pagination) {
 
-		List<RoomDto> response = new ArrayList<>();
-
-		if (!(number instanceof Integer))
-			response = RoomDto.converter(roomRepository.findAll());
-		else
-			response = RoomDto.converter(roomRepository.findByNumber(number));
-
-		if (response.isEmpty() || response == null)
-			return ResponseEntity.notFound().build();
-		else
-			return ResponseEntity.ok(response);
+		return this.service.listAllRooms(number, pagination);
 	}
 
 	// @PathVariable indica que esse 'id' virá através da url com /topicos/id
 	// inves de ser passado com '?id='
 	@GetMapping("/rooms/{id}")
 	public ResponseEntity<RoomDto> listOneRoom(@PathVariable Long id) {
-		Optional<Room> room = roomRepository.findById(id);
-		if (room.isPresent())
-			return ResponseEntity.ok(new RoomDto(room.get()));
-		else
-			return ResponseEntity.notFound().build();
+		
+		return this.service.listOneRoom(id);
 	}
 
 	@DeleteMapping("/rooms/{id}")
 	@Transactional
 	public ResponseEntity<?> deleteRoom(@PathVariable Long id) {
-		Optional<Room> room = roomRepository.findById(id);
-		if (room.isPresent()) {
-			roomRepository.deleteById(id);
-			return ResponseEntity.ok().build();
-		} else
-			return ResponseEntity.notFound().build();
+		
+		return this.service.deleteRoom(id);
 	}
 }

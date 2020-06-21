@@ -15,10 +15,10 @@ public class RoomDto {
 	}
 
 	public RoomDto(Room room) {
+		this.id = room.getId();
 		this.number = room.getNumber();
 		this.dimension = room.getDimension();
 	}
-	
 
 	public Long getId() {
 		return id;
