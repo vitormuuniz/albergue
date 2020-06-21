@@ -112,10 +112,11 @@ public class CustomerGetTests2 {
 		when(customerRepository.findByName(eq(customer.getName()))).thenReturn(customersList);
 		
 		MvcResult result = 
-				mockMvc.perform(get(uri + "?name=Washington"))
-				.andDo(print())
-				.andExpect(status().isOk())
-				.andReturn();
+				mockMvc.perform(get(uri)
+						.param("name", "Washington"))
+						.andDo(print())
+						.andExpect(status().isOk())
+						.andReturn();
 
 		String contentAsString = result.getResponse().getContentAsString();
 
@@ -152,7 +153,8 @@ public class CustomerGetTests2 {
 	public void shouldNotReturnAnyCustomerByWrongParamAndStatusNotFound() throws Exception {
 
 		when(customerRepository.findByName(eq(customer.getName()))).thenReturn(customersList);
-		mockMvc.perform(get(uri + "?name=Washington222"))
+		mockMvc.perform(get(uri)
+				.param("name", "Washington222"))
 				.andDo(print())
 				.andExpect(status().isNotFound())
 				.andReturn();

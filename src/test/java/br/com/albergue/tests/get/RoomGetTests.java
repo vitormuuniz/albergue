@@ -1,6 +1,9 @@
 package br.com.albergue.tests.get;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -8,37 +11,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.albergue.controller.dto.RoomDto;
 import br.com.albergue.domain.Room;
 import br.com.albergue.repository.RoomRepository;
-import org.json.*;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@AutoConfigureMockMvc
 public class RoomGetTests {
 
 	@Autowired
-	private TestRestTemplate restTemplate;
-	
-	@LocalServerPort
-	private int port;
+	private MockMvc mockMvc;
 	
 	@MockBean
 	private RoomRepository roomRepository;
@@ -62,69 +59,77 @@ public class RoomGetTests {
 	}
 	
 	@Test
-	public void shouldReturnAllRoomsAndStatusOkWithoutParam() throws JSONException, JsonMappingException, JsonProcessingException {
+	public void shouldReturnAllRoomsAndStatusOkWithoutParam() throws Exception {
 		Room room2 = new Room(14, 250.0);
 		roomList.add(room2);
 		
 		Mockito.when(roomRepository.findAll()).thenReturn(roomList);
 
-		ResponseEntity<String> result = restTemplate.getForEntity(uri, String.class);
-		
-		String contentAsString = result.getBody();
+		MvcResult result = 
+				mockMvc.perform(get(uri))
+						.andDo(print())
+						.andExpect(status().isOk())
+						.andReturn();
 
+		String contentAsString = result.getResponse().getContentAsString();
+		
 		RoomDto[] customerObjResponse = objectMapper.readValue(contentAsString, RoomDto[].class);
 		
 		/// Verify request succeed
 		assertEquals(customerObjResponse.length, 2);
 		assertEquals(customerObjResponse[0].getNumber(), 13);
 		assertEquals(customerObjResponse[0].getDimension(), 230, 0);
-		assertEquals(200, result.getStatusCodeValue());
-
 	}
 	
 	@Test
-	public void shouldReturnOneRoomAndStatusOkByParam() throws URISyntaxException, JsonMappingException, JsonProcessingException {
+	public void shouldReturnOneRoomAndStatusOkByParam() throws Exception {
 		
 		Mockito.when(roomRepository.findByNumber(13)).thenReturn(roomList);
 
-		ResponseEntity<String> result = restTemplate.getForEntity(uri + "?number=13", String.class);
+		MvcResult result = 
+				mockMvc.perform(get(uri)
+						.param("number", "13"))
+						.andDo(print())
+						.andExpect(status().isOk())
+						.andReturn();
 
-		String contentAsString = result.getBody();
+		String contentAsString = result.getResponse().getContentAsString();
 
 		RoomDto[] customerObjResponse = objectMapper.readValue(contentAsString, RoomDto[].class);
 		
 		/// Verify request succeed
 		assertEquals(customerObjResponse[0].getNumber(), 13);
 		assertEquals(customerObjResponse[0].getDimension(), 230, 0);
-		assertEquals(200, result.getStatusCodeValue());
 	}
 	
 	@Test
-	public void shouldReturnOneRoomAndStatusOkById() throws URISyntaxException, JsonMappingException, JsonProcessingException {
+	public void shouldReturnOneRoomAndStatusOkById() throws Exception {
 		
 		Mockito.when(roomRepository.findById(1L)).thenReturn(Optional.of(room));
 
-		ResponseEntity<String> result = restTemplate.getForEntity(uri + "/1", String.class);
+		MvcResult result = 
+				mockMvc.perform(get(uri+"/1"))
+						.andDo(print())
+						.andExpect(status().isOk())
+						.andReturn();
 
-		String contentAsString = result.getBody();
-
+		String contentAsString = result.getResponse().getContentAsString();
 		RoomDto customerObjResponse = objectMapper.readValue(contentAsString, RoomDto.class);
 		
 		/// Verify request succeed
 		assertEquals(customerObjResponse.getNumber(), 13);
 		assertEquals(customerObjResponse.getDimension(), 230, 0);
-		assertEquals(200, result.getStatusCodeValue());
 	}
 	
 	@Test
-	public void shouldReturnNotFoundStatusAndNullBodyByWrongParam() throws URISyntaxException {
+	public void shouldReturnNotFoundStatusAndNullBodyByWrongParam() throws Exception {
 		
 		Mockito.when(roomRepository.findByNumber(13)).thenReturn(roomList);
 
-		ResponseEntity<String> result = restTemplate.getForEntity(uri + "?number=333", String.class);
-
-		// Verify request succeed
-		Assert.assertEquals(404, result.getStatusCodeValue());
-		Assert.assertEquals(result.getBody(), null);
+		mockMvc.perform(get(uri)
+				.param("number", "333"))
+				.andDo(print())
+				.andExpect(status().isNotFound())
+				.andReturn();
 	}
 }

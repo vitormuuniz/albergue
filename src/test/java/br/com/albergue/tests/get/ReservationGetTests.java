@@ -1,6 +1,9 @@
 package br.com.albergue.tests.get;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -11,21 +14,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.albergue.controller.dto.ReservationDto;
@@ -36,15 +36,13 @@ import br.com.albergue.repository.CustomerRepository;
 import br.com.albergue.repository.ReservationRepository;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@AutoConfigureMockMvc
 public class ReservationGetTests {
 
 	@Autowired
-	private TestRestTemplate restTemplate;
+	private MockMvc mockMvc;
 
-	@LocalServerPort
-	private int port;
-	
 	@MockBean
 	private CustomerRepository customerRepository;
 
@@ -83,7 +81,7 @@ public class ReservationGetTests {
 	}
 
 	@Test
-	public void shouldReturnOneReservationAndStatusOkWithoutParam() throws URISyntaxException, JSONException, JsonMappingException, JsonProcessingException {
+	public void shouldReturnOneReservationAndStatusOkWithoutParam() throws Exception {
 		
 		Reservation reservation2 = reservation;
 		reservation2.setNumberOfGuests(25);
@@ -91,14 +89,17 @@ public class ReservationGetTests {
 
 		Mockito.when(reservationRepository.findAll()).thenReturn(reservationsList);
 
-		ResponseEntity<String> result = restTemplate.getForEntity(uri, String.class);
+		MvcResult result = 
+				mockMvc.perform(get(uri))
+						.andDo(print())
+						.andExpect(status().isOk())
+						.andReturn();
 
-		String contentAsString = result.getBody();
+		String contentAsString = result.getResponse().getContentAsString();
 
 		ReservationDto[] customerObjResponse = objectMapper.readValue(contentAsString, ReservationDto[].class);
 
 		/// Verify request succeed
-		assertEquals(200, result.getStatusCodeValue());
 		assertEquals(customerObjResponse[0].getPayments().getAmount(), 5000, 0);
 		assertEquals(customerObjResponse.length, 2);
 		
@@ -106,48 +107,59 @@ public class ReservationGetTests {
 	}
 
 	@Test
-	public void shouldReturnOneReservationAndStatusOkByParam() throws URISyntaxException, JsonMappingException, JsonProcessingException {
+	public void shouldReturnOneReservationAndStatusOkByParam() throws Exception {
 
 		Mockito.when(customerRepository.findByName("Teste")).thenReturn(customersList);
 		Mockito.when(customer.getReservations()).thenReturn(reservationsList.stream().collect(Collectors.toSet()));
 		
-		ResponseEntity<String> result = restTemplate.getForEntity(uri + "?name=Teste", String.class);
 
-		String contentAsString = result.getBody();
+		MvcResult result = 
+				mockMvc.perform(get(uri)
+						.param("name", "Teste"))
+						.andDo(print())
+						.andExpect(status().isOk())
+						.andReturn();
+
+		String contentAsString = result.getResponse().getContentAsString();
 
 		ReservationDto[] customerObjResponse = objectMapper.readValue(contentAsString, ReservationDto[].class);
-		
+
 		/// Verify request succeed
-		assertEquals(200, result.getStatusCodeValue());
 		assertEquals(customerObjResponse[0].getPayments().getAmount(), 5000, 0);
+		assertEquals(customerObjResponse[0].getCheckinDate(), LocalDate.of(2012, 12, 12));
 	}
 
 	@Test
-	public void shouldReturnOneReservationAndStatusOkById() throws URISyntaxException, JsonMappingException, JsonProcessingException {
+	public void shouldReturnOneReservationAndStatusOkById() throws Exception {
 
 		Mockito.when(reservationRepository.findById(2L)).thenReturn(Optional.of(reservation));
 
-		ResponseEntity<String> result = restTemplate.getForEntity(uri + "/2", String.class);
-		
-		String contentAsString = result.getBody();
+
+		MvcResult result = 
+				mockMvc.perform(get(uri+"/2"))
+						.andDo(print())
+						.andExpect(status().isOk())
+						.andReturn();
+
+		String contentAsString = result.getResponse().getContentAsString();
 
 		ReservationDto customerObjResponse = objectMapper.readValue(contentAsString, ReservationDto.class);
 
 		/// Verify request succeed
-		assertEquals(200, result.getStatusCodeValue());
 		assertEquals(customerObjResponse.getPayments().getAmount(), 5000, 0);
+		assertEquals(customerObjResponse.getCheckinDate(), LocalDate.of(2012, 12, 12));
 	}
 
 	@Test
-	public void shouldReturnNotFoundStatusAndNullBodyByWrongParam() throws URISyntaxException {
+	public void shouldReturnNotFoundStatusAndNullBodyByWrongParam() throws Exception {
 
 		Mockito.when(customerRepository.findByName("Teste")).thenReturn(customersList);
 		Mockito.when(customer.getReservations()).thenReturn(reservationsList.stream().collect(Collectors.toSet()));
 
-		ResponseEntity<String> result = restTemplate.getForEntity(uri + "?name=Teste333", String.class);
-
-		// Verify request succeed
-		assertEquals(404, result.getStatusCodeValue());
-		assertEquals(result.getBody(), null);
+		mockMvc.perform(get(uri)
+				.param("name", "Teste333"))
+				.andDo(print())
+				.andExpect(status().isNotFound())
+				.andReturn();
 	}
 }
