@@ -1,11 +1,7 @@
 package br.com.albergue.controller;
 
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -31,14 +27,6 @@ import br.com.albergue.controller.dto.RoomDto;
 import br.com.albergue.controller.form.CustomerForm;
 import br.com.albergue.controller.form.ReservationForm;
 import br.com.albergue.controller.form.RoomForm;
-import br.com.albergue.domain.Customer;
-import br.com.albergue.domain.Reservation;
-import br.com.albergue.domain.Room;
-import br.com.albergue.repository.AddressRepository;
-import br.com.albergue.repository.CustomerRepository;
-import br.com.albergue.repository.PaymentsRepository;
-import br.com.albergue.repository.ReservationRepository;
-import br.com.albergue.repository.RoomRepository;
 import br.com.albergue.service.HostelService;
 
 @RestController
