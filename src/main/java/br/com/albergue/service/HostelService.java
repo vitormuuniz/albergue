@@ -50,10 +50,6 @@ public class HostelService {
 		Customer customer = form.returnCustomer(addressRepository);
 		customerRepository.save(customer);
 
-		// path indica o caminho do recurso sendo chamado (pra nao passar o caminho
-		// completo)
-		// buildAndExpend serve para pegar e substituir o id em {id} dinamicamente
-		// toUri para transformar na uri completa
 		URI uri = uriBuilder.path("/customers/{id}").buildAndExpand(customer.getId()).toUri();
 		return ResponseEntity.created(uri).body(new CustomerDto(customer));
 	}
@@ -101,10 +97,6 @@ public class HostelService {
 			customer.addReservation(reservation);
 			customerRepository.save(customer);
 
-			// path indica o caminho do recurso sendo chamado (pra nao passar o caminho
-			// completo)
-			// buildAndExpend serve para pegar e substituir o id em {id} dinamicamente
-			// toUri para transformar na uri completa
 			URI uri = uriBuilder.path("/reservations/{id}").buildAndExpand(customer.getId()).toUri();
 			return ResponseEntity.created(uri).body(new ReservationDto(reservation));
 		} else
@@ -157,10 +149,6 @@ public class HostelService {
 		Room room = form.returnRoom();
 		roomRepository.save(room);
 
-		// path indica o caminho do recurso sendo chamado (pra nao passar o caminho
-		// completo)
-		// buildAndExpend serve para pegar e substituir o id em {id} dinamicamente
-		// toUri para transformar na uri completa
 		URI uri = uriBuilder.path("/rooms/{id}").buildAndExpand(room.getId()).toUri();
 		return ResponseEntity.created(uri).body(new RoomDto(room));
 	}

@@ -36,19 +36,14 @@ public class HostelController {
 	@Autowired
 	private HostelService service;
 
-	@PostMapping("/customers") // chegam do cliente para a api
+	@PostMapping("/customers") 
 	public ResponseEntity<CustomerDto> registerCustomer(@RequestBody @Valid CustomerForm form,
 			UriComponentsBuilder uriBuilder) {
 		
 		return this.service.registerCustomer(form, uriBuilder);
 	}
 
-	// @RequestParam indica que os parametros irão vir pela url e que são
-	// obrigatórios
-	// @PageableDefault serve para dizer qual ordenação deverá ser feita caso não
-	// sejam passados parametros
-
-	@GetMapping("/customers") // dto = saem da api e é retornado para o cliente
+	@GetMapping("/customers") 
 	public ResponseEntity<List<CustomerDto>> listAllCustomers(@RequestParam(required = false) String name,
 			@PageableDefault(sort = "id", direction = Direction.DESC, page = 0, size = 10) Pageable pagination)
 			throws URISyntaxException {
@@ -56,8 +51,6 @@ public class HostelController {
 		return this.service.listAllCustomers(name, pagination);
 	}
 
-	// @PathVariable indica que esse 'id' virá através da url com /topicos/id
-	// inves de ser passado com '?id='
 	@GetMapping("/customers/{id}")
 	public ResponseEntity<CustomerDto> listOneCustomer(@PathVariable Long id) {
 		
@@ -71,22 +64,20 @@ public class HostelController {
 		return this.service.deleteCustomer(id);
 	}
 
-	@PostMapping("/reservations") // chegam do cliente para a api
+	@PostMapping("/reservations") 
 	public ResponseEntity<ReservationDto> registerReservation(@RequestBody @Valid ReservationForm form,
 			UriComponentsBuilder uriBuilder) {
 		
 		return this.service.registerReservation(form, uriBuilder);
 	}
 
-	@GetMapping("/reservations") // dto = saem da api e é retornado para o cliente
+	@GetMapping("/reservations") 
 	public ResponseEntity<List<ReservationDto>> listAllReservations(@RequestParam(required = false) String name,
 			@PageableDefault(sort = "id", direction = Direction.DESC, page = 0, size = 10) Pageable pagination) {
 		
 		return this.service.listAllReservations(name, pagination);
 	}
 
-	// @PathVariable indica que esse 'id' virá através da url com /topicos/id
-	// inves de ser passado com '?id='
 	@GetMapping("/reservations/{id}")
 	public ResponseEntity<ReservationDto> listOneReservation(@PathVariable Long id) {
 		
@@ -100,21 +91,19 @@ public class HostelController {
 		return this.service.deleteReservation(id);
 	}
 
-	@PostMapping("/rooms") // chegam do cliente para a api
+	@PostMapping("/rooms") 
 	public ResponseEntity<RoomDto> registerRoom(@RequestBody @Valid RoomForm form, UriComponentsBuilder uriBuilder) {
 		
 		return this.service.registerRoom(form, uriBuilder);
 	}
 
-	@GetMapping("/rooms") // dto = saem da api e é retornado para o cliente
+	@GetMapping("/rooms") 
 	public ResponseEntity<List<RoomDto>> listAllRooms(@RequestParam(required = false) Integer number,
 			@PageableDefault(sort = "id", direction = Direction.DESC, page = 0, size = 10) Pageable pagination) {
 
 		return this.service.listAllRooms(number, pagination);
 	}
 
-	// @PathVariable indica que esse 'id' virá através da url com /topicos/id
-	// inves de ser passado com '?id='
 	@GetMapping("/rooms/{id}")
 	public ResponseEntity<RoomDto> listOneRoom(@PathVariable Long id) {
 		
