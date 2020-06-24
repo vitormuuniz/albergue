@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -29,18 +30,21 @@ public class Reservation {
 	@NotNull
 	private LocalDate checkoutDate;
 	
+	@NotNull
 	@OneToMany
 	private Set<Room> rooms = new HashSet<>();
-	@OneToOne
-	@JoinColumn(name = "payments_ID", nullable = false)
+	
 	@NotNull
+	@OneToOne(cascade=CascadeType.REMOVE)
+	@JoinColumn(name = "payment_ID", nullable = false)
 	private Payments payment;
 	
-	public Reservation(LocalDate reservationDate, LocalDate checkinDate, LocalDate checkoutDate, Payments payment) {
+	public Reservation(LocalDate reservationDate, LocalDate checkinDate, LocalDate checkoutDate, Set<Room> rooms, Payments payment) {
 		this.reservationDate = reservationDate;
 		this.checkinDate = checkinDate;
 		this.checkoutDate = checkoutDate;
 		this.payment = payment;
+		this.rooms = rooms;
 	}
 
 	public Reservation() {
@@ -80,7 +84,7 @@ public class Reservation {
 	}
 
 	public void addRoom(Room room) {
-		rooms.add(room);
+		this.rooms.add(room);
 	}
 
 	public Set<Room> getRooms() {

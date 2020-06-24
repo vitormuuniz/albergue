@@ -2,20 +2,28 @@ package br.com.albergue.domain;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 @DiscriminatorValue("1")
 public class CashPayment extends Payments {
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	
 	private double amountTendered;
 	
-	@Override
-	public String toString( ) {
-		String result = "Payment in cash...: " +  "\n" +  
-	             super.toString() + "\n" +
-                "Amount tendered..: " + amountTendered;
-		return result;
+	public Long getId() {
+		return id;
 	}
 
+	public void setId(Long id) {
+		this.id = id;
+	}
+	
 	public double getAmountTendered() {
 		return amountTendered;
 	}
@@ -23,5 +31,4 @@ public class CashPayment extends Payments {
 	public void setAmountTendered(double amountTendered) {
 		this.amountTendered = amountTendered;
 	}
-	
 }

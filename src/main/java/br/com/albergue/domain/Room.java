@@ -1,10 +1,13 @@
 package br.com.albergue.domain;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class Room {
@@ -13,18 +16,22 @@ public class Room {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@NotNull
 	private int number;
+	@NotNull
 	private double dimension;
-	@OneToOne
+	@OneToOne(cascade=CascadeType.REMOVE)
+	@JoinColumn(name = "dailyRate_ID", nullable = false)
 	private DailyRate dailyRate;
 	
 	public Room() {
 		
 	}
 	
-	public Room(int number, double dimension) {
+	public Room(int number, double dimension, DailyRate dailyRate) {
 		this.number = number;
 		this.dimension = dimension;
+		this.dailyRate = dailyRate;
 	}
 	
 	

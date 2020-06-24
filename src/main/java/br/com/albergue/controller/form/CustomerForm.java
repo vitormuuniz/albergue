@@ -1,6 +1,7 @@
 package br.com.albergue.controller.form;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 
@@ -8,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import br.com.albergue.domain.Address;
 import br.com.albergue.domain.Customer;
+import br.com.albergue.domain.Reservation;
 import br.com.albergue.repository.AddressRepository;
 
 public class CustomerForm {
@@ -26,6 +28,8 @@ public class CustomerForm {
 	private String email;
 	@NotNull 
 	private String password;
+	@NotNull
+	private Set<Reservation> reservations;
 	
 	public String getTitle() {
 		return title;
@@ -82,9 +86,19 @@ public class CustomerForm {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	
+	public Set<Reservation> getReservations() {
+		return reservations;
+	}
+
+	public void setReservations(Set<Reservation> reservations) {
+		this.reservations = reservations;
+	}
 
 	public Customer returnCustomer(AddressRepository addressRepository) {
-		addressRepository.save(address);
-		return new Customer(title, name, lastname, birthday, address, email, new BCryptPasswordEncoder().encode(password));
+		addressRepository.save(getAddress());
+		
+		return new Customer(getTitle(), getName(), getLastName(), getBirthday(), getAddress(), getEmail(), 
+				new BCryptPasswordEncoder().encode(getPassword()), getReservations());
 	}
 }

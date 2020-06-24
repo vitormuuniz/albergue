@@ -14,11 +14,13 @@ public class DailyRate {
 	
 	private double price;
 	
+	public DailyRate() {}
+	
 	public DailyRate(double price) {
 		 this.price = price;
 	}
 
-	public double getValor() {
+	public double getPrice() {
 		return price;
 	}
 

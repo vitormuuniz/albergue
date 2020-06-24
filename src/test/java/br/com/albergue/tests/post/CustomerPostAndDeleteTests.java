@@ -1,9 +1,10 @@
 package br.com.albergue.tests.post;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -43,7 +44,7 @@ public class CustomerPostAndDeleteTests {
 
 	@Autowired
 	AddressRepository addressRepository;
-
+	
 	@Autowired
 	private MockMvc mockMvc;
 
@@ -55,7 +56,7 @@ public class CustomerPostAndDeleteTests {
 	private Address address = new Address();
 	private Customer customer = new Customer();
 	private LoginForm login = new LoginForm();
-
+	
 	@Before
 	public void init() throws JsonProcessingException, Exception {
 		uri = new URI("/api/customers/");
@@ -77,14 +78,14 @@ public class CustomerPostAndDeleteTests {
 		// seting header to put on post and delete request parameters
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.set("Authorization", "Bearer " + loginObjResponse.getToken());
-
+		
 		// setting address to put into the customer paramseters
 		address.setAddressName("rua x");
 		address.setCity("Amparo");
 		address.setCountry("Brasil");
 		address.setState("SP");
 		address.setZipCode("13900-000");
-
+		
 		// setting customer
 		customer.setAddress(address);
 		customer.setBirthday(LocalDate.of(1900, 12, 12));
@@ -94,7 +95,7 @@ public class CustomerPostAndDeleteTests {
 		customer.setTitle("MRS.");
 		customer.setPassword("1234567");
 	}
-
+	
 	@Test
 	public void shouldAutenticateAndDeleteOneCustomerWithId2() throws Exception {
 		addressRepository.save(address);

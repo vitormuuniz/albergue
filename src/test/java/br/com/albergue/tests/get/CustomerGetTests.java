@@ -1,10 +1,11 @@
 package br.com.albergue.tests.get;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -16,7 +17,6 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static org.mockito.Mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -54,20 +54,19 @@ public class CustomerGetTests {
 	private Address address = new Address();
 	private Customer customer = new Customer();
 	private List<Customer> customersList = new ArrayList<>();
-
+	
 	@Before
 	public void init() throws URISyntaxException {
 
 		uri = new URI("/api/customers");
 
 		// setting address to put into the customer paramseters
-		address.setId(1L);
 		address.setAddressName("rua x");
 		address.setCity("Amparo");
 		address.setCountry("Brasil");
 		address.setState("SP");
 		address.setZipCode("13900-000");
-
+		
 		// setting customer
 		customer.setId(1L);
 		customer.setLastName("aaaaaaaaaa");

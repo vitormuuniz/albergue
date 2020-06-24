@@ -1,14 +1,17 @@
 package br.com.albergue.tests.post;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -33,8 +36,12 @@ import br.com.albergue.controller.form.ReservationForm;
 import br.com.albergue.domain.CashPayment;
 import br.com.albergue.domain.CheckPayment;
 import br.com.albergue.domain.CreditCardPayment;
+import br.com.albergue.domain.DailyRate;
+import br.com.albergue.domain.Room;
+import br.com.albergue.repository.DailyRateRepository;
 import br.com.albergue.repository.PaymentsRepository;
 import br.com.albergue.repository.ReservationRepository;
+import br.com.albergue.repository.RoomRepository;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
@@ -49,6 +56,12 @@ public class ReservationPostAndDeleteTests {
 	PaymentsRepository paymentsRepository;
 	
 	@Autowired
+	RoomRepository roomRepository;
+	
+	@Autowired
+	DailyRateRepository dailyRateRepository;
+	
+	@Autowired
 	private MockMvc mockMvc;
 	
 	@Autowired
@@ -61,6 +74,8 @@ public class ReservationPostAndDeleteTests {
 	private CheckPayment checkPayment = new CheckPayment();
 	private CashPayment cashPayment = new CashPayment();
 	private CreditCardPayment creditCardPayment = new CreditCardPayment();
+	private Room room = new Room(13, 230.0, new DailyRate(400.0));
+	private Set<Room> roomList = new HashSet<>();
 	
 	@Before
 	public void init() throws JsonProcessingException, Exception {
@@ -84,12 +99,14 @@ public class ReservationPostAndDeleteTests {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.set("Authorization", "Bearer " + loginObjResponse.getToken());
 		
+		roomList.add(room);
+		
 		//setting reservation object
 		reservationForm.setCheckinDate(LocalDate.of(2019, 04, 01));
 		reservationForm.setCheckoutDate(LocalDate.of(2019, 04, 04));
 		reservationForm.setReservationDate(LocalDate.of(2019, 04, 01));
+		reservationForm.setRooms(roomList);
 		reservationForm.setCustomer_ID(1L);
-		
 	}
 	
 	@Test
@@ -100,9 +117,9 @@ public class ReservationPostAndDeleteTests {
 		checkPayment.setBankName("Banco do Brasil");
 		checkPayment.setBranchNumber("1234-5");
 		
-		reservationForm.setPayments(checkPayment);
+		reservationForm.setPayment(checkPayment);
 		
-		reservationRepository.save(reservationForm.returnReservation(paymentsRepository));
+		reservationRepository.save(reservationForm.returnReservation(paymentsRepository, roomRepository, dailyRateRepository));
 
 		mockMvc
 			.perform(delete(uri + "1")
@@ -120,10 +137,8 @@ public class ReservationPostAndDeleteTests {
 		checkPayment.setBankName("Banco do Brasil");
 		checkPayment.setBranchNumber("1234-5");
 		
-		reservationForm.setPayments(checkPayment);
-		
-		reservationRepository.save(reservationForm.returnReservation(paymentsRepository));
-		
+		reservationForm.setPayment(checkPayment);
+
 		MvcResult result = 
 				mockMvc
 					.perform(post(uri)
@@ -132,7 +147,6 @@ public class ReservationPostAndDeleteTests {
 					.andDo(print())
 					.andExpect(status().isCreated())
 					.andReturn();
-
 		String contentAsString = result.getResponse().getContentAsString();
 
 		ReservationDto reservationObjResponse = objectMapper.readValue(contentAsString, ReservationDto.class);
@@ -150,9 +164,7 @@ public class ReservationPostAndDeleteTests {
 		cashPayment.setAmountTendered(10000);
 		cashPayment.setDate(LocalDateTime.of(LocalDate.of(2020,01,25), LocalTime.of(21, 32)));
 		
-		reservationForm.setPayments(cashPayment);
-		
-		reservationRepository.save(reservationForm.returnReservation(paymentsRepository));
+		reservationForm.setPayment(cashPayment);
 		
 		MvcResult result = 
 				mockMvc
@@ -184,9 +196,7 @@ public class ReservationPostAndDeleteTests {
 		creditCardPayment.setExpirationDate(LocalDate.of(2020, 05, 01));
 		creditCardPayment.setSecurityCode("123");
 		
-		reservationForm.setPayments(creditCardPayment);
-		
-		reservationRepository.save(reservationForm.returnReservation(paymentsRepository));
+		reservationForm.setPayment(creditCardPayment);
 		
 		MvcResult result = 
 				mockMvc

@@ -30,9 +30,9 @@ public abstract class Payments {
 	private Long id;
 	
 	@NotNull
-	protected double amount;
+	private double amount;
 	@NotNull
-	protected LocalDateTime dateTime;
+	private LocalDateTime dateTime;
 	
 	public Long getId() {
 	    return id;
@@ -52,11 +52,5 @@ public abstract class Payments {
 	
 	public void setDate(LocalDateTime date) {
 		this.dateTime = date;
-	}
-	
-	public String toString() {
-		String result = "Amount...: " + this.amount + "\n" +
-                                "Date & time..: " + this.dateTime;
-		return result;
 	}
 }

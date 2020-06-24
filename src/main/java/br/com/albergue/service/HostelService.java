@@ -23,6 +23,7 @@ import br.com.albergue.domain.Reservation;
 import br.com.albergue.domain.Room;
 import br.com.albergue.repository.AddressRepository;
 import br.com.albergue.repository.CustomerRepository;
+import br.com.albergue.repository.DailyRateRepository;
 import br.com.albergue.repository.PaymentsRepository;
 import br.com.albergue.repository.ReservationRepository;
 import br.com.albergue.repository.RoomRepository;
@@ -44,6 +45,9 @@ public class HostelService {
 
 	@Autowired
 	private PaymentsRepository paymentsRepository;
+	
+	@Autowired
+	private DailyRateRepository dailyRateRepository;
 	
 	
 	public ResponseEntity<CustomerDto> registerCustomer(CustomerForm form, UriComponentsBuilder uriBuilder){
@@ -90,7 +94,7 @@ public class HostelService {
 		Optional<Customer> customerOp = form.returnCustomer(customerRepository);
 
 		if (customerOp.isPresent()) {
-			Reservation reservation = form.returnReservation(paymentsRepository);
+			Reservation reservation = form.returnReservation(paymentsRepository, roomRepository, dailyRateRepository);
 			reservationRepository.save(reservation);
 
 			Customer customer = customerOp.get();
@@ -146,7 +150,7 @@ public class HostelService {
 	}
 
 	public ResponseEntity<RoomDto> registerRoom(RoomForm form, UriComponentsBuilder uriBuilder) {
-		Room room = form.returnRoom();
+		Room room = form.returnRoom(dailyRateRepository);
 		roomRepository.save(room);
 
 		URI uri = uriBuilder.path("/rooms/{id}").buildAndExpand(room.getId()).toUri();
@@ -159,9 +163,9 @@ public class HostelService {
 		List<RoomDto> response = new ArrayList<>();
 
 		if (!(number instanceof Integer))
-			response = RoomDto.converter(roomRepository.findAll());
+			response = RoomDto.convert(roomRepository.findAll());
 		else
-			response = RoomDto.converter(roomRepository.findByNumber(number));
+			response = RoomDto.convert(roomRepository.findByNumber(number));
 
 		if (response.isEmpty() || response == null)
 			return ResponseEntity.notFound().build();

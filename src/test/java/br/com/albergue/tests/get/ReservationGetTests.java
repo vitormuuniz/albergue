@@ -31,7 +31,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import br.com.albergue.controller.dto.ReservationDto;
 import br.com.albergue.domain.CashPayment;
 import br.com.albergue.domain.Customer;
+import br.com.albergue.domain.DailyRate;
 import br.com.albergue.domain.Reservation;
+import br.com.albergue.domain.Room;
 import br.com.albergue.repository.CustomerRepository;
 import br.com.albergue.repository.ReservationRepository;
 
@@ -55,6 +57,7 @@ public class ReservationGetTests {
 	private URI uri;
 	private Reservation reservation = new Reservation();
 	private CashPayment cash = new CashPayment();
+	private Room room = new Room(13, 230.0, new DailyRate(400.0));
 	private List<Reservation> reservationsList = new ArrayList<>();
 	
 	private Customer customer = Mockito.mock(Customer.class);
@@ -73,7 +76,8 @@ public class ReservationGetTests {
 		reservation.setReservationDate(LocalDate.now());
 		reservation.setNumberOfGuests(2);
 		reservation.setPayment(cash);
-
+		reservation.addRoom(room);
+		
 		reservationsList.add(reservation);
 		
 		customer.addReservation(reservation);

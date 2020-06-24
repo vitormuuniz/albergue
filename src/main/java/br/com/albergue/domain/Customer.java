@@ -4,6 +4,7 @@ import java.lang.String;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -47,14 +48,14 @@ public class Customer implements UserDetails {
 	
 	@OneToMany(cascade={CascadeType.REMOVE, CascadeType.MERGE})
     @Column(name="reservations")
-    private Set<Reservation> reservations;
+    private Set<Reservation> reservations = new HashSet<>();
     
 	public Customer() {
 		
 	}
 	
 	public Customer(String title, String name, String lastName, LocalDate birthday, Address address, String email,
-			String password) {
+			String password, Set<Reservation> reservatons) {
 		this.title = title;
 		this.name = name;
 		this.lastName = lastName;
@@ -62,6 +63,7 @@ public class Customer implements UserDetails {
 		this.address = address;
 		this.email = email;
 		this.password = password;
+		this.reservations = reservatons;
 	}
 
 
@@ -151,6 +153,18 @@ public class Customer implements UserDetails {
 		this.password = password;
 	}
 	
+	public Set<Reservation> getReservations() {
+		return this.reservations;
+	}
+
+	public void setReservations(Set<Reservation> reservations) {
+		this.reservations = reservations;
+	}
+
+	public void addReservation(Reservation reservation) {
+		this.reservations.add(reservation);
+	}
+	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return this.perfis ;
@@ -184,17 +198,5 @@ public class Customer implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return true;
-	}
-
-	public Set<Reservation> getReservations() {
-		return reservations;
-	}
-
-	public void setReservations(Set<Reservation> reservations) {
-		this.reservations = reservations;
-	}
-
-	public void addReservation(Reservation reservation) {
-		this.reservations.add(reservation);
 	}
 }

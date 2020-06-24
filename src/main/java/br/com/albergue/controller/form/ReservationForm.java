@@ -2,14 +2,18 @@ package br.com.albergue.controller.form;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 
 import br.com.albergue.domain.Customer;
 import br.com.albergue.domain.Payments;
 import br.com.albergue.domain.Reservation;
+import br.com.albergue.domain.Room;
 import br.com.albergue.repository.CustomerRepository;
+import br.com.albergue.repository.DailyRateRepository;
 import br.com.albergue.repository.PaymentsRepository;
+import br.com.albergue.repository.RoomRepository;
 
 public class ReservationForm {
 	
@@ -20,10 +24,11 @@ public class ReservationForm {
 	@NotNull
 	LocalDate checkoutDate;
 	@NotNull 
-	private Payments payments;
+	private Payments payment;
 	@NotNull
-	private
-	Long customer_ID;
+	private	Long customer_ID;
+	@NotNull
+	private Set<Room> rooms;
 
 	public LocalDate getReservationDate() {
 		return reservationDate;
@@ -57,20 +62,34 @@ public class ReservationForm {
 		this.customer_ID = customer_ID;
 	}
 	
-	public Payments getPayments() {
-		return payments;
+	public Payments getPayment() {
+		return payment;
 	}
 
-	public void setPayments(Payments payments) {
-		this.payments = payments;
+	public void setPayment(Payments payment) {
+		this.payment = payment;
+	}
+	
+	public Set<Room> getRooms() {
+		return rooms;
+	}
+
+	public void setRooms(Set<Room> rooms) {
+		this.rooms = rooms;
 	}
 
 	public Optional<Customer> returnCustomer(CustomerRepository customerRepository) {
 		return customerRepository.findById(getCustomer_ID());
 	}
 	
-	public Reservation returnReservation(PaymentsRepository paymentsRepository) {
-		paymentsRepository.save(payments);
-		return new Reservation(reservationDate, checkinDate, checkoutDate, payments);
+	public Reservation returnReservation(PaymentsRepository paymentsRepository, RoomRepository roomRepository, DailyRateRepository dailyRateRepository) {
+		paymentsRepository.save(getPayment());
+		
+		for (Room room : rooms) {
+			dailyRateRepository.save(room.getDailyRate());
+			roomRepository.save(room);
+		}
+		
+		return new Reservation(getReservationDate(), getCheckinDate(), getCheckoutDate(), getRooms(), getPayment());
 	}
 }

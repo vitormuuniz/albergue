@@ -21,8 +21,7 @@ public class CustomerDto {
 	private String password;
     private Set<Reservation> reservations;
     
-    public CustomerDto() {
-	}
+    public CustomerDto() {}
 
 	public CustomerDto(Customer customer) {
 		this.id = customer.getId();
@@ -72,19 +71,13 @@ public class CustomerDto {
 		return reservations;
 	}
 
-	public void setReservations(Set<Reservation> reservations) {
-		this.reservations = reservations;
-	}
-
 	public static List<CustomerDto> converter(List<Customer> customersList) {
-		//fazendo um map de topico para topicoDto
-		//TopicoDto::new -> recebe o proprio construtor que recebe um topico como parametro
-		//collect() -> transforma essa saida em uma lista
-//		return topicos.stream().map(TopicoDto::new).collect(Collectors.toList());
+
 		List<CustomerDto> customersDtoList = new ArrayList<>();
 		for(Customer c : customersList) {
 			customersDtoList.add(new CustomerDto(c));
 		}
+		
 		return customersDtoList;
 	}
 }

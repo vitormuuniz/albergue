@@ -26,7 +26,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import br.com.albergue.controller.dto.RoomDto;
 import br.com.albergue.controller.dto.TokenDto;
 import br.com.albergue.controller.form.LoginForm;
+import br.com.albergue.domain.DailyRate;
 import br.com.albergue.domain.Room;
+import br.com.albergue.repository.DailyRateRepository;
 import br.com.albergue.repository.RoomRepository;
 
 @RunWith(SpringRunner.class)
@@ -38,6 +40,8 @@ public class RoomPostAndDeleteTests {
 	@Autowired
 	private RoomRepository roomRepository;
 	
+	@Autowired DailyRateRepository dailyRateRepository;
+	
 	@Autowired
 	private MockMvc mockMvc;
 	
@@ -46,7 +50,8 @@ public class RoomPostAndDeleteTests {
 
 	private URI uri;
 	private HttpHeaders headers = new HttpHeaders();
-	private Room room = new Room(5, 230.0);
+	private DailyRate dailyRate = new DailyRate(400.0);
+	private Room room = new Room(5, 230.0, dailyRate);
 	private LoginForm login = new LoginForm();
 
 	@Before
@@ -75,6 +80,7 @@ public class RoomPostAndDeleteTests {
 
 	@Test
 	public void shouldAutenticateAndDeleteOneRoomWithId2() throws Exception {
+		dailyRateRepository.save(dailyRate);
 		roomRepository.save(room);
 		
 		mockMvc.perform(delete(uri + "1")

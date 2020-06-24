@@ -2,7 +2,9 @@ package br.com.albergue.controller.form;
 
 import javax.validation.constraints.NotNull;
 
+import br.com.albergue.domain.DailyRate;
 import br.com.albergue.domain.Room;
+import br.com.albergue.repository.DailyRateRepository;
 
 public class RoomForm {
 
@@ -11,6 +13,9 @@ public class RoomForm {
 	
 	@NotNull
 	double dimension;
+	
+	@NotNull
+	private	DailyRate dailyRate;
 
 	public int getNumber() {
 		return number;
@@ -28,7 +33,16 @@ public class RoomForm {
 		this.dimension = dimension;
 	}
 	
-	public Room returnRoom() {
-		return new Room(number, dimension);
+	public DailyRate getDailyRate() {
+		return dailyRate;
+	}
+
+	public void setDailyRate(DailyRate dailyRate) {
+		this.dailyRate = dailyRate;
+	}
+	
+	public Room returnRoom(DailyRateRepository dailyRateRepository) {
+		dailyRateRepository.save(getDailyRate());
+		return new Room(getNumber(), getDimension(), getDailyRate());
 	}
 }

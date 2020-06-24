@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.albergue.controller.dto.RoomDto;
+import br.com.albergue.domain.DailyRate;
 import br.com.albergue.domain.Room;
 import br.com.albergue.repository.RoomRepository;
 
@@ -46,21 +47,21 @@ public class RoomGetTests {
 	private URI uri;
 	private Room room;	
 	private List<Room> roomList = new ArrayList<>();
-
+	
 	
 	@Before
 	public void init() throws URISyntaxException {
 
 		uri = new URI("/api/rooms");
 
-		room = new Room(13, 230.0);
+		room = new Room(13, 230.0, new DailyRate(400.0));
 		
 		roomList.add(room);
 	}
 	
 	@Test
 	public void shouldReturnAllRoomsAndStatusOkWithoutParam() throws Exception {
-		Room room2 = new Room(14, 250.0);
+		Room room2 = new Room(14, 250.0, new DailyRate(500.0));
 		roomList.add(room2);
 		
 		Mockito.when(roomRepository.findAll()).thenReturn(roomList);
@@ -74,11 +75,12 @@ public class RoomGetTests {
 		String contentAsString = result.getResponse().getContentAsString();
 		
 		RoomDto[] customerObjResponse = objectMapper.readValue(contentAsString, RoomDto[].class);
-		
+		System.out.println(">>>>>>>>>>>>>>>>"+customerObjResponse[0].getDailyRate().getPrice());
+		System.out.println(">>>>>>>>>>>>>>>>>>"+customerObjResponse[1].getDailyRate().getPrice());
 		/// Verify request succeed
 		assertEquals(customerObjResponse.length, 2);
 		assertEquals(customerObjResponse[0].getNumber(), 13);
-		assertEquals(customerObjResponse[0].getDimension(), 230, 0);
+		assertEquals(customerObjResponse[1].getDailyRate().getPrice(), 500, 0);
 	}
 	
 	@Test

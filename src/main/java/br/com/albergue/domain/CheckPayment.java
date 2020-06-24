@@ -2,24 +2,30 @@ package br.com.albergue.domain;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 @DiscriminatorValue("2")
 public class CheckPayment extends Payments {
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	
 	private String bankId;
 	private String bankName;
 	private String branchNumber;
 	
-	public String toString( ) {
-		String result = "Payment with check...: " +  "\n" +    
-                 super.toString() + "\n" +
-                "Bank ID...: " + this.bankId + "\n" +
-                "Bank name...: " + this.bankName + "\n" +
-                "Branch number...: " + this.branchNumber;
-		return result;
+	public Long getId() {
+		return id;
 	}
 
+	public void setId(Long id) {
+		this.id = id;
+	}
+	
 	public String getBankId() {
 		return bankId;
 	}
