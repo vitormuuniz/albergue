@@ -53,7 +53,7 @@ public class RoomDto {
 	}
 	
 	public Room returnRoom() {
-		return new Room(getNumber(), getDimension(), getDailyRate());
+		return new Room(number, dimension, dailyRate);
 	}
 	
 }

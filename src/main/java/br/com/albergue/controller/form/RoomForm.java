@@ -42,7 +42,7 @@ public class RoomForm {
 	}
 	
 	public Room returnRoom(DailyRateRepository dailyRateRepository) {
-		dailyRateRepository.save(getDailyRate());
-		return new Room(getNumber(), getDimension(), getDailyRate());
+		dailyRateRepository.save(dailyRate);
+		return new Room(number, dimension, dailyRate);
 	}
 }

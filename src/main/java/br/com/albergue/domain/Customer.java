@@ -55,7 +55,7 @@ public class Customer implements UserDetails {
 	}
 	
 	public Customer(String title, String name, String lastName, LocalDate birthday, Address address, String email,
-			String password, Set<Reservation> reservatons) {
+			String password) {
 		this.title = title;
 		this.name = name;
 		this.lastName = lastName;
@@ -63,7 +63,6 @@ public class Customer implements UserDetails {
 		this.address = address;
 		this.email = email;
 		this.password = password;
-		this.reservations = reservatons;
 	}
 
 
