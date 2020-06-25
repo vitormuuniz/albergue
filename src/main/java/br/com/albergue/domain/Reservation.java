@@ -22,6 +22,8 @@ public class Reservation {
 	private Long id;
 	
 	@NotNull
+	private Long customer_ID;
+	@NotNull
 	private int numberOfGuests;
 	@NotNull
 	private LocalDate reservationDate;
@@ -39,12 +41,14 @@ public class Reservation {
 	@JoinColumn(name = "payment_ID", nullable = false)
 	private Payments payment;
 	
-	public Reservation(LocalDate reservationDate, LocalDate checkinDate, LocalDate checkoutDate, Set<Room> rooms, Payments payment) {
+	public Reservation(Long customer_ID, int numberOfGuests,LocalDate reservationDate, LocalDate checkinDate, LocalDate checkoutDate, Set<Room> rooms, Payments payment) {
+		this.customer_ID = customer_ID;
+		this.numberOfGuests = numberOfGuests;
 		this.reservationDate = reservationDate;
 		this.checkinDate = checkinDate;
 		this.checkoutDate = checkoutDate;
-		this.payment = payment;
 		this.rooms = rooms;
+		this.payment = payment;
 	}
 
 	public Reservation() {
@@ -110,4 +114,13 @@ public class Reservation {
 	public void setRooms(Set<Room> rooms) {
 		this.rooms = rooms;
 	}
+
+	public Long getCustomer_ID() {
+		return customer_ID;
+	}
+
+	public void setCustomer_ID(Long customer_ID) {
+		this.customer_ID = customer_ID;
+	}
+	
 }

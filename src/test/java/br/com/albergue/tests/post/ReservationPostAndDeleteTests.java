@@ -10,8 +10,8 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,9 +36,6 @@ import br.com.albergue.controller.form.ReservationForm;
 import br.com.albergue.domain.CashPayment;
 import br.com.albergue.domain.CheckPayment;
 import br.com.albergue.domain.CreditCardPayment;
-import br.com.albergue.domain.DailyRate;
-import br.com.albergue.domain.Room;
-import br.com.albergue.repository.DailyRateRepository;
 import br.com.albergue.repository.PaymentsRepository;
 import br.com.albergue.repository.ReservationRepository;
 import br.com.albergue.repository.RoomRepository;
@@ -59,9 +56,6 @@ public class ReservationPostAndDeleteTests {
 	RoomRepository roomRepository;
 	
 	@Autowired
-	DailyRateRepository dailyRateRepository;
-	
-	@Autowired
 	private MockMvc mockMvc;
 	
 	@Autowired
@@ -74,12 +68,12 @@ public class ReservationPostAndDeleteTests {
 	private CheckPayment checkPayment = new CheckPayment();
 	private CashPayment cashPayment = new CashPayment();
 	private CreditCardPayment creditCardPayment = new CreditCardPayment();
-	private Room room = new Room(13, 230.0, new DailyRate(400.0));
-	private Set<Room> roomList = new HashSet<>();
+	private List<Long> rooms_ID = new ArrayList<>();
 	
 	@Before
 	public void init() throws JsonProcessingException, Exception {
 		uri = new URI("/api/reservations/");
+		
 		
 		//setting login variables to autenticate
 		login.setEmail("aluno@email.com");
@@ -99,13 +93,11 @@ public class ReservationPostAndDeleteTests {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.set("Authorization", "Bearer " + loginObjResponse.getToken());
 		
-		roomList.add(room);
-		
 		//setting reservation object
 		reservationForm.setCheckinDate(LocalDate.of(2019, 04, 01));
 		reservationForm.setCheckoutDate(LocalDate.of(2019, 04, 04));
 		reservationForm.setReservationDate(LocalDate.of(2019, 04, 01));
-		reservationForm.setRooms(roomList);
+		reservationForm.setNumberOfGuests(2);
 		reservationForm.setCustomer_ID(1L);
 	}
 	
@@ -117,9 +109,12 @@ public class ReservationPostAndDeleteTests {
 		checkPayment.setBankName("Banco do Brasil");
 		checkPayment.setBranchNumber("1234-5");
 		
+		paymentsRepository.save(checkPayment);
 		reservationForm.setPayment(checkPayment);
 		
-		reservationRepository.save(reservationForm.returnReservation(paymentsRepository, roomRepository, dailyRateRepository));
+		rooms_ID.add(1L);
+		reservationForm.setRooms_ID(rooms_ID);
+		reservationRepository.save(reservationForm.returnReservation(paymentsRepository, roomRepository));
 
 		mockMvc
 			.perform(delete(uri + "1")
@@ -138,6 +133,9 @@ public class ReservationPostAndDeleteTests {
 		checkPayment.setBranchNumber("1234-5");
 		
 		reservationForm.setPayment(checkPayment);
+		
+		rooms_ID.add(2L);
+		reservationForm.setRooms_ID(rooms_ID);
 
 		MvcResult result = 
 				mockMvc
@@ -165,6 +163,9 @@ public class ReservationPostAndDeleteTests {
 		cashPayment.setDate(LocalDateTime.of(LocalDate.of(2020,01,25), LocalTime.of(21, 32)));
 		
 		reservationForm.setPayment(cashPayment);
+		
+		rooms_ID.add(3L);
+		reservationForm.setRooms_ID(rooms_ID);
 		
 		MvcResult result = 
 				mockMvc
@@ -197,6 +198,10 @@ public class ReservationPostAndDeleteTests {
 		creditCardPayment.setSecurityCode("123");
 		
 		reservationForm.setPayment(creditCardPayment);
+		
+		rooms_ID.add(4L);
+		rooms_ID.add(5L);
+		reservationForm.setRooms_ID(rooms_ID);
 		
 		MvcResult result = 
 				mockMvc

@@ -15,6 +15,7 @@ public class ReservationDto {
 	private LocalDate reservationDate;
 	private LocalDate checkinDate;
 	private LocalDate checkoutDate;
+	private int numberOfGuests;
 	private Payments payments;
 	private Set<Room> rooms;
 	
@@ -28,6 +29,7 @@ public class ReservationDto {
 		this.checkoutDate = reservation.getCheckoutDate();
 		this.payments = reservation.getPayment();
 		this.rooms = reservation.getRooms();
+		this.numberOfGuests = reservation.getNumberOfGuests();
 	}
 
 	public Long getId() {
@@ -52,6 +54,10 @@ public class ReservationDto {
 	
 	public Set<Room> getRooms() {
 		return rooms;
+	}
+	
+	public int getNumberOfGuests() {
+		return numberOfGuests;
 	}
 	
 	public static List<ReservationDto> converter(List<Reservation> reservationsList) {

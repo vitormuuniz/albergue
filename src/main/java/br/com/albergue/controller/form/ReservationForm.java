@@ -1,34 +1,51 @@
 package br.com.albergue.controller.form;
 
 import java.time.LocalDate;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 
-import br.com.albergue.domain.Customer;
 import br.com.albergue.domain.Payments;
 import br.com.albergue.domain.Reservation;
 import br.com.albergue.domain.Room;
-import br.com.albergue.repository.CustomerRepository;
-import br.com.albergue.repository.DailyRateRepository;
 import br.com.albergue.repository.PaymentsRepository;
 import br.com.albergue.repository.RoomRepository;
 
 public class ReservationForm {
-	
+
+	@NotNull
+	private Long customer_ID;
+	@NotNull
+	private int numberOfGuests;
 	@NotNull
 	LocalDate reservationDate;
 	@NotNull
 	LocalDate checkinDate;
 	@NotNull
 	LocalDate checkoutDate;
-	@NotNull 
+	@NotNull
+	private List<Long> rooms_ID = new ArrayList<>();
+	@NotNull
 	private Payments payment;
-	@NotNull
-	private	Long customer_ID;
-	@NotNull
-	private Set<Room> rooms;
+
+	public Long getCustomer_ID() {
+		return customer_ID;
+	}
+
+	public void setCustomer_ID(Long customer_ID) {
+		this.customer_ID = customer_ID;
+	}
+
+	public int getNumberOfGuests() {
+		return numberOfGuests;
+	}
+
+	public void setNumberOfGuests(int numberOfGuests) {
+		this.numberOfGuests = numberOfGuests;
+	}
 
 	public LocalDate getReservationDate() {
 		return reservationDate;
@@ -54,14 +71,14 @@ public class ReservationForm {
 		this.checkoutDate = checkoutDate;
 	}
 
-	public Long getCustomer_ID() {
-		return customer_ID;
+	public List<Long> getRooms_ID() {
+		return rooms_ID;
 	}
 
-	public void setCustomer_ID(Long customer_ID) {
-		this.customer_ID = customer_ID;
+	public void setRooms_ID(List<Long> rooms_ID) {
+		this.rooms_ID = rooms_ID;
 	}
-	
+
 	public Payments getPayment() {
 		return payment;
 	}
@@ -69,27 +86,15 @@ public class ReservationForm {
 	public void setPayment(Payments payment) {
 		this.payment = payment;
 	}
-	
-	public Set<Room> getRooms() {
-		return rooms;
+
+	public Reservation returnReservation(PaymentsRepository paymentsRepository, RoomRepository roomRepository) {
+		paymentsRepository.save(payment);
+		Set<Room> roomsList = new HashSet<>();
+
+		rooms_ID.forEach(id -> roomsList.add(roomRepository.findById(id).get()));
+
+		return new Reservation(customer_ID, numberOfGuests, reservationDate, checkinDate, checkoutDate, 
+				roomsList, payment);
 	}
 
-	public void setRooms(Set<Room> rooms) {
-		this.rooms = rooms;
-	}
-
-	public Optional<Customer> returnCustomer(CustomerRepository customerRepository) {
-		return customerRepository.findById(getCustomer_ID());
-	}
-	
-	public Reservation returnReservation(PaymentsRepository paymentsRepository, RoomRepository roomRepository, DailyRateRepository dailyRateRepository) {
-		paymentsRepository.save(getPayment());
-		
-		for (Room room : rooms) {
-			dailyRateRepository.save(room.getDailyRate());
-			roomRepository.save(room);
-		}
-		
-		return new Reservation(getReservationDate(), getCheckinDate(), getCheckoutDate(), getRooms(), getPayment());
-	}
 }
