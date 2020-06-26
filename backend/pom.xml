@@ -10,9 +10,9 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>br.com.albergue</groupId>
-	<artifactId>albergue-spring-boot</artifactId>
+	<artifactId>hostel-spring-boot</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>albergue-spring-boot</name>
+	<name>hostel-spring-boot</name>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
