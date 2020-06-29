@@ -9,7 +9,7 @@
 		<version>2.2.5.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>br.com.albergue</groupId>
+	<groupId>br.com.hostel</groupId>
 	<artifactId>hostel-spring-boot</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>hostel-spring-boot</name>
