@@ -26,8 +26,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.hostel.controller.dto.RoomDto;
-import br.com.hostel.domain.DailyRate;
-import br.com.hostel.domain.Room;
+import br.com.hostel.model.DailyRate;
+import br.com.hostel.model.Room;
 import br.com.hostel.repository.RoomRepository;
 
 @RunWith(SpringRunner.class)

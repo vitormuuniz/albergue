@@ -2,8 +2,8 @@ package br.com.hostel.controller.form;
 
 import javax.validation.constraints.NotNull;
 
-import br.com.hostel.domain.DailyRate;
-import br.com.hostel.domain.Room;
+import br.com.hostel.model.DailyRate;
+import br.com.hostel.model.Room;
 import br.com.hostel.repository.DailyRateRepository;
 
 public class RoomForm {

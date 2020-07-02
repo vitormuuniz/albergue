@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import br.com.hostel.domain.Address;
-import br.com.hostel.domain.Customer;
-import br.com.hostel.domain.Reservation;
+import br.com.hostel.model.Address;
+import br.com.hostel.model.Customer;
+import br.com.hostel.model.Reservation;
 
 public class CustomerDto {
 	

@@ -6,8 +6,8 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import br.com.hostel.domain.Address;
-import br.com.hostel.domain.Customer;
+import br.com.hostel.model.Address;
+import br.com.hostel.model.Customer;
 import br.com.hostel.repository.AddressRepository;
 
 public class CustomerForm {

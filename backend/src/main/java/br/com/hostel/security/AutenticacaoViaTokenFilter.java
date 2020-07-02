@@ -11,7 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import br.com.hostel.domain.Customer;
+import br.com.hostel.model.Customer;
 import br.com.hostel.repository.CustomerRepository;
 
 public class AutenticacaoViaTokenFilter extends OncePerRequestFilter {

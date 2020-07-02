@@ -29,11 +29,11 @@ import org.springframework.test.web.servlet.MvcResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.hostel.controller.dto.ReservationDto;
-import br.com.hostel.domain.CashPayment;
-import br.com.hostel.domain.Customer;
-import br.com.hostel.domain.DailyRate;
-import br.com.hostel.domain.Reservation;
-import br.com.hostel.domain.Room;
+import br.com.hostel.model.CashPayment;
+import br.com.hostel.model.Customer;
+import br.com.hostel.model.DailyRate;
+import br.com.hostel.model.Reservation;
+import br.com.hostel.model.Room;
 import br.com.hostel.repository.CustomerRepository;
 import br.com.hostel.repository.ReservationRepository;
 

@@ -1,4 +1,4 @@
-package  br.com.hostel.domain.exceptions;
+package  br.com.hostel.model.exceptions;
 
 public class ReservationNotFoundException extends Exception{
 	private String name;

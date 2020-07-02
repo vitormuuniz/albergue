@@ -1,4 +1,4 @@
-package br.com.hostel.domain;
+package br.com.hostel.model;
 
 import java.lang.String;
 import java.time.LocalDate;

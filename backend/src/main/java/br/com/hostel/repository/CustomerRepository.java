@@ -5,8 +5,8 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import br.com.hostel.domain.Address;
-import br.com.hostel.domain.Customer;
+import br.com.hostel.model.Address;
+import br.com.hostel.model.Customer;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long>{
 

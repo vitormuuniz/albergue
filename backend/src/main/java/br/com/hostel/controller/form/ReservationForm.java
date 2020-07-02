@@ -8,9 +8,9 @@ import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 
-import br.com.hostel.domain.Payments;
-import br.com.hostel.domain.Reservation;
-import br.com.hostel.domain.Room;
+import br.com.hostel.model.Payments;
+import br.com.hostel.model.Reservation;
+import br.com.hostel.model.Room;
 import br.com.hostel.repository.PaymentsRepository;
 import br.com.hostel.repository.RoomRepository;
 

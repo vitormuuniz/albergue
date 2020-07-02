@@ -3,8 +3,8 @@ package br.com.hostel.controller.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.hostel.domain.DailyRate;
-import br.com.hostel.domain.Room;
+import br.com.hostel.model.DailyRate;
+import br.com.hostel.model.Room;
 
 public class RoomDto {
 

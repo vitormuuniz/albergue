@@ -14,8 +14,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.hostel.controller.dto.ReservationDto;
 import br.com.hostel.controller.form.ReservationForm;
-import br.com.hostel.domain.Customer;
-import br.com.hostel.domain.Reservation;
+import br.com.hostel.model.Customer;
+import br.com.hostel.model.Reservation;
 import br.com.hostel.repository.CustomerRepository;
 import br.com.hostel.repository.PaymentsRepository;
 import br.com.hostel.repository.ReservationRepository;

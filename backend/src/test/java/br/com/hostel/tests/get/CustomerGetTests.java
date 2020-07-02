@@ -28,8 +28,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.hostel.controller.dto.CustomerDto;
-import br.com.hostel.domain.Address;
-import br.com.hostel.domain.Customer;
+import br.com.hostel.model.Address;
+import br.com.hostel.model.Customer;
 import br.com.hostel.repository.AddressRepository;
 import br.com.hostel.repository.CustomerRepository;
 

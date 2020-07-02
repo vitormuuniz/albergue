@@ -26,8 +26,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import br.com.hostel.controller.dto.RoomDto;
 import br.com.hostel.controller.dto.LoginDto;
 import br.com.hostel.controller.form.LoginForm;
-import br.com.hostel.domain.DailyRate;
-import br.com.hostel.domain.Room;
+import br.com.hostel.model.DailyRate;
+import br.com.hostel.model.Room;
 import br.com.hostel.repository.DailyRateRepository;
 import br.com.hostel.repository.RoomRepository;
 

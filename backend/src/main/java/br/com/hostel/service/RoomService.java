@@ -13,7 +13,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.hostel.controller.dto.RoomDto;
 import br.com.hostel.controller.form.RoomForm;
-import br.com.hostel.domain.Room;
+import br.com.hostel.model.Room;
 import br.com.hostel.repository.DailyRateRepository;
 import br.com.hostel.repository.RoomRepository;
 
