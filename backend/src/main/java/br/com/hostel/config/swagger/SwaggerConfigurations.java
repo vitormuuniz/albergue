@@ -22,7 +22,7 @@ public class SwaggerConfigurations {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("br.com.albergue"))
+                .apis(RequestHandlerSelectors.basePackage("br.com.hostel"))
                 .paths(PathSelectors.ant("/**"))
                 .build()
                 .ignoredParameterTypes(Customer.class)
